@@ -2,58 +2,66 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Grafik Anggaran Cloud</title>
+    <title>Grafik Musrenbang</title>
     <style>
-        body { font-family: Arial; background: #f2f4f8; margin: 0; }
-        .header { background: #2c7be5; color: white; padding: 15px; display: flex; align-items: center; }
-        .logo { width: 40px; margin-right: 12px; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        body { font-family: Arial; padding: 20px; background: #f4f6f9; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        .bar-container { margin-top: 30px; }
         .bar-item { margin-bottom: 20px; }
-        .bar-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; }
-        .bar-bg { background: #e9ecef; height: 35px; border-radius: 18px; overflow: hidden; }
-        .bar-fill { height: 100%; display: flex; align-items: center; color: white; padding-left: 15px; font-size: 12px; transition: width 1s ease; }
-        button { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; }
+        .bar-bg { background: #e2e8f0; height: 25px; border-radius: 12px; overflow: hidden; }
+        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; transition: width 1s; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="Logo_Tana_Toraja.png" class="logo">
-        <strong>Grafik Real-time Musrenbang</strong>
-    </div>
-    <div class="container">
-        <div class="card">
-            <h3>📊 Grafik Anggaran per Bidang (Real-time Cloud)</h3>
-            <div id="grafikArea">Memuat grafik...</div>
-            <button onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
-        </div>
-    </div>
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
-        const colors = { "Bidang Sarana dan Prasarana": "#2c7be5", "Bidang Sosial Budaya": "#e63946", "Bidang Ekonomi": "#2a9d8f", "Default": "#6c757d" };
 
-        async function muatGrafik() {
-            try {
-                const resp = await fetch(API_URL);
-                const data = await resp.json();
-                const rekap = {};
-                let max = 0;
-                data.forEach(d => {
-                    rekap[d.bidang] = (rekap[d.bidang] || 0) + Number(d.anggaran || 0);
-                    if(rekap[d.bidang] > max) max = rekap[d.bidang];
-                });
-                const area = document.getElementById("grafikArea"); area.innerHTML = "";
-                for(let b in rekap) {
-                    const persen = max > 0 ? (rekap[b]/max)*100 : 0;
-                    area.innerHTML += `
-                        <div class="bar-item">
-                            <div class="bar-label"><span>${b}</span><span>Rp ${rekap[b].toLocaleString('id-ID')}</span></div>
-                            <div class="bar-bg"><div class="bar-fill" style="width:${persen}%; background:${colors[b] || colors.Default}">${Math.round(persen)}%</div></div>
-                        </div>`;
-                }
-            } catch(e) { document.getElementById("grafikArea").innerHTML = "Data Cloud belum tersedia atau format salah."; }
-        }
-        muatGrafik();
-    </script>
+<div class="card">
+    <h2 style="text-align:center">📊 Distribusi Anggaran Per Bidang</h2>
+    <div id="grafikArea" class="bar-container">
+        <p style="text-align:center">Menganalisis data cloud...</p>
+    </div>
+    <button onclick="location.href='dashboard_admin.html'" style="width:100%; margin-top:20px; padding:10px; cursor:pointer">Kembali ke Dashboard</button>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzSQzpDYFmZa3JZhSX8Y5P_wLwNXxihegGqtT5RGL7AGeaTzmR6yCUSPsS1IkfVwEtX/exec";
+    const colors = {
+        "Bidang Sarana dan Prasarana": "#3182ce",
+        "Bidang Sosial Budaya": "#e53e3e",
+        "Bidang Ekonomi": "#38a169",
+        "Default": "#718096"
+    };
+
+    async function muatGrafik() {
+        const area = document.getElementById("grafikArea");
+        try {
+            const resp = await fetch(API_URL);
+            const data = await resp.json();
+            
+            const rekap = {};
+            let totalMax = 0;
+
+            data.forEach(d => {
+                const b = d.bidang || "Lainnya";
+                const a = parseFloat(d.anggaran) || 0;
+                rekap[b] = (rekap[b] || 0) + a;
+                if(rekap[b] > totalMax) totalMax = rekap[b];
+            });
+
+            area.innerHTML = "";
+            for(let b in rekap) {
+                const persen = totalMax > 0 ? (rekap[b] / totalMax) * 100 : 0;
+                area.innerHTML += `
+                    <div class="bar-item">
+                        <div class="bar-label"><span>${b}</span><span>Rp ${rekap[b].toLocaleString('id-ID')}</span></div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" style="width:${persen}%; background:${colors[b] || colors.Default}">${Math.round(persen)}%</div>
+                        </div>
+                    </div>`;
+            }
+        } catch(e) { area.innerHTML = "Gagal memuat grafik."; }
+    }
+    muatGrafik();
+</script>
 </body>
 </html>

@@ -2,44 +2,28 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Usulan Musrenbang</title>
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #333; }
-        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 15px 25px; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; }
+        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
         .logo { width: 45px; margin-right: 15px; }
         .container { padding: 20px; max-width: 1200px; margin: auto; }
-        .card { background: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h3 { margin-top: 0; color: #2c7be5; border-bottom: 2px solid #eef2f7; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input, select, textarea, button { width: 100%; padding: 12px; margin-top: 8px; box-sizing: border-box; border: 1px solid #dcdfe6; border-radius: 6px; }
-        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        button:hover { background: #1a68d1; }
-        .btn-excel { background: #28a745; width: auto; margin-right: 10px; padding: 10px 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        input, select, textarea, button { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .btn-excel { background: #28a745; width: auto; padding: 10px 20px; }
         .btn-pdf { background: #dc3545; width: auto; padding: 10px 20px; }
-        
-        /* Pengaturan Tabel */
-        .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 13px; vertical-align: top; }
-        th { background: #f8f9fa; color: #495057; }
-        
-        /* Lebar Kolom Spesifik agar tidak berantakan saat Print */
-        .col-no { width: 5%; }
-        .col-bid { width: 15%; }
-        .col-keg { width: 25%; }
-        .col-lok { width: 15%; }
-        .col-ang { width: 15%; }
-        .col-ket { width: 25%; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
+        th { background: #f8f9fa; }
+        .loading { text-align: center; font-weight: bold; color: #2c7be5; padding: 20px; }
 
-        /* CSS KHUSUS PRINT */
-        @media print { 
+        @media print {
             @page { size: landscape; margin: 1cm; }
-            .no-print, .header, button { display: none !important; } 
-            .card { border: none; box-shadow: none; padding: 0; }
+            .no-print, .header, button { display: none !important; }
+            .card { box-shadow: none; border: none; }
             table { width: 100%; border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 8px; font-size: 11px; }
-            body { background: white; }
+            th, td { border: 1px solid #000; padding: 5px; font-size: 10px; }
         }
     </style>
 </head>
@@ -52,58 +36,45 @@
 
 <div class="container">
     <div class="card no-print">
-        <h3>➕ Form Tambah Usulan</h3>
-        <label>Kelurahan</label>
-        <input id="kelurahan" readonly style="background: #f8f9fa;">
-
-        <label>Bidang Program</label>
+        <h3>➕ Form Input Usulan permanen</h3>
+        <label>Kelurahan:</label>
+        <input id="kelurahan" readonly style="background:#eee">
         <select id="bidang">
             <option value="">-- Pilih Bidang --</option>
             <option>Bidang Sarana dan Prasarana</option>
             <option>Bidang Sosial Budaya</option>
             <option>Bidang Ekonomi</option>
         </select>
-
-        <label>Nama Kegiatan</label>
-        <textarea id="kegiatan" placeholder="Contoh: Pengaspalan Jalan..."></textarea>
-
-        <label>Lokasi Spesifik</label>
-        <input id="lokasi" placeholder="RT/RW atau Dusun">
-
-        <label>Volume</label>
-        <input id="volume" placeholder="Contoh: 100 Meter">
-
-        <label>Anggaran (Rp)</label>
-        <input id="anggaran" type="number" placeholder="Contoh: 50000000">
-
-        <label>Keterangan</label>
-        <textarea id="keterangan" placeholder="Berikan keterangan tambahan jika ada..."></textarea>
-
+        <textarea id="kegiatan" placeholder="Nama Kegiatan"></textarea>
+        <input id="lokasi" placeholder="Lokasi Spesifik">
+        <input id="volume" placeholder="Volume (Contoh: 100 Meter)">
+        <input id="anggaran" type="number" placeholder="Anggaran (Rp)">
+        <textarea id="keterangan" placeholder="Keterangan Tambahan (Akan muncul di tabel dan cetakan)"></textarea>
+        
         <button id="btnSimpan" onclick="simpanData()">💾 Simpan & Kirim ke Cloud</button>
-        <button onclick="location.href='dashboard.html'" style="background: #6c757d;">⬅ Kembali ke Dashboard</button>
+        <button style="background:#6c757d" onclick="location.href='dashboard.html'">⬅ Kembali</button>
     </div>
 
     <div class="card">
         <h3 id="tabelJudul">📄 Daftar Usulan</h3>
-        <div class="no-print" style="margin-bottom: 20px;">
+        <div class="no-print" style="margin-bottom: 15px;">
             <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
-            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak PDF</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Print PDF</button>
         </div>
-        
-        <div class="table-container">
-            <table id="tableMain">
+        <div style="overflow-x: auto;">
+            <table id="tableData">
                 <thead>
                     <tr>
-                        <th class="col-no">No</th>
-                        <th class="col-bid">Bidang</th>
-                        <th class="col-keg">Kegiatan</th>
-                        <th class="col-lok">Lokasi</th>
-                        <th class="col-ang">Anggaran (Rp)</th>
-                        <th class="col-ket">Keterangan</th>
+                        <th>No</th>
+                        <th>Bidang</th>
+                        <th>Kegiatan</th>
+                        <th>Lokasi</th>
+                        <th>Anggaran (Rp)</th>
+                        <th>Keterangan</th>
                     </tr>
                 </thead>
                 <tbody id="tbody">
-                    <tr><td colspan="6" style="text-align:center;">Menghubungkan ke Cloud...</td></tr>
+                    <tr><td colspan="6" class="loading">Menyinkronkan data dengan Cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -111,7 +82,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyjLcO6HOsA1yPKizXf6IqnqeSTIlgRPRfITkcnWuGIiuQPLzumwsnHq63H2AQSmfPo/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzSQzpDYFmZa3JZhSX8Y5P_wLwNXxihegGqtT5RGL7AGeaTzmR6yCUSPsS1IkfVwEtX/exec";
     const kelurahanLogin = localStorage.getItem("kelurahan") || "Umum";
 
     document.getElementById("kelurahan").value = kelurahanLogin;
@@ -120,33 +91,29 @@
 
     async function muatData() {
         try {
-            const resp = await fetch(API_URL);
+            const resp = await fetch(API_URL + "?t=" + new Date().getTime());
             const data = await resp.json();
-            const dataFilter = data.filter(d => d.kelurahan === kelurahanLogin);
-            renderTabel(dataFilter);
+            const filtered = data.filter(d => d.kelurahan === kelurahanLogin);
+            renderTabel(filtered);
         } catch (e) {
-            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center;color:red;'>Gagal sinkronisasi data.</td></tr>";
+            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center;color:red'>Gagal sinkron Cloud. Menampilkan data lokal terakhir.</td></tr>";
         }
     }
 
     function renderTabel(data) {
         const tbody = document.getElementById("tbody");
         tbody.innerHTML = "";
-        if (data.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Belum ada data riwayat.</td></tr>";
-            return;
-        }
-        data.forEach((item, index) => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.bidang || '-'}</td>
-                    <td>${item.kegiatan || '-'}</td>
-                    <td>${item.lokasi || '-'}</td>
-                    <td>${item.anggaran ? Number(item.anggaran).toLocaleString('id-ID') : '0'}</td>
-                    <td>${item.keterangan || '-'}</td>
-                </tr>`;
+        data.forEach((d, i) => {
+            tbody.innerHTML += `<tr>
+                <td>${i + 1}</td>
+                <td>${d.bidang || '-'}</td>
+                <td>${d.kegiatan || '-'}</td>
+                <td>${d.lokasi || '-'}</td>
+                <td>${d.anggaran ? Number(d.anggaran).toLocaleString('id-ID') : '0'}</td>
+                <td>${d.keterangan || '-'}</td>
+            </tr>`;
         });
+        if(data.length === 0) tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Belum ada usulan.</td></tr>";
     }
 
     async function simpanData() {
@@ -161,51 +128,31 @@
             keterangan: document.getElementById("keterangan").value
         };
 
-        if (!payload.bidang || !payload.kegiatan) return alert("Bidang dan Kegiatan wajib diisi!");
+        if(!payload.bidang || !payload.kegiatan) return alert("Mohon lengkapi Bidang dan Kegiatan!");
 
         btn.disabled = true;
-        btn.innerText = "⌛ Memproses...";
+        btn.innerText = "⌛ Mengirim...";
 
         try {
             await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("Berhasil disimpan!");
+            alert("Data Berhasil Tersimpan Secara Permanen!");
             resetForm();
             muatData();
-        } catch (e) {
-            alert("Gagal mengirim data.");
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "💾 Simpan & Kirim ke Cloud";
-        }
+        } catch (e) { alert("Gagal Simpan!"); }
+        finally { btn.disabled = false; btn.innerText = "💾 Simpan & Kirim ke Cloud"; }
     }
 
     function resetForm() {
-        document.getElementById("bidang").value = "";
-        document.getElementById("kegiatan").value = "";
-        document.getElementById("lokasi").value = "";
-        document.getElementById("volume").value = "";
-        document.getElementById("anggaran").value = "";
-        document.getElementById("keterangan").value = "";
+        ["bidang", "kegiatan", "lokasi", "volume", "anggaran", "keterangan"].forEach(id => document.getElementById(id).value = "");
     }
 
-    /**
-     * PERBAIKAN EXPORT EXCEL: Mengambil seluruh konten tabel ID tableMain
-     */
     function exportExcel() {
-        const table = document.getElementById("tableMain");
-        const html = `
-            <html>
-            <head><meta charset="UTF-8"></head>
-            <body>
-                <h3>DAFTAR USULAN MUSRENBANG - ${kelurahanLogin}</h3>
-                <table border="1">${table.innerHTML}</table>
-            </body>
-            </html>`;
-        
+        const table = document.getElementById("tableData");
+        const html = `<html><head><meta charset="UTF-8"></head><body>${table.outerHTML}</body></html>`;
         const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `Rekap_Usulan_${kelurahanLogin}.xls`;
+        a.download = `Usulan_${kelurahanLogin}.xls`;
         a.click();
     }
 
