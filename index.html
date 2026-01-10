@@ -1,202 +1,45 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Login Aplikasi Musrenbang</title>
-
-<style>
-/* ===== GLOBAL ===== */
-body {
-  font-family: Arial, sans-serif;
-  background: #2c7be5;
-  min-height: 100vh;
-  margin: 0;
-}
-
-/* ===== BOX LOGIN ===== */
-.login-box {
-  width: 360px;
-  max-width: 92%;
-  margin: 80px auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-/* ===== LOGO ===== */
-.logo {
-  width: 120px;
-  display: block;
-  margin: 0 auto 15px;
-}
-
-/* ===== JUDUL ===== */
-h2 {
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-
-/* ===== INPUT & BUTTON ===== */
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 15px;
-  border-radius: 5px;
-}
-
-input {
-  border: 1px solid #ccc;
-}
-
-button {
-  background: #2c7be5;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background: #1f5fc4;
-}
-
-/* ===== INFO ===== */
-.info-app {
-  margin-top: 15px;
-  font-size: 13px;
-  color: #444;
-  text-align: center;
-}
-
-.developer {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #777;
-  text-align: center;
-}
-
-/* ===== ERROR ===== */
-.error {
-  color: red;
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* ===== RESPONSIVE HP ===== */
-@media (max-width: 480px) {
-
-  .login-box {
-    margin: 40px auto;
-    padding: 20px;
-  }
-
-  .logo {
-    width: 90px;
-    margin-bottom: 10px;
-  }
-
-  h2 {
-    font-size: 16px;
-  }
-
-  input, button {
-    font-size: 15px;
-    padding: 13px;
-  }
-
-  .info-app {
-    font-size: 12px;
-  }
-
-  .developer {
-    font-size: 11px;
-  }
-}
-</style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Musrenbang</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #2c7be5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        select, input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
+    </style>
 </head>
-
 <body>
-
-<div class="login-box">
-
-  <img src="Logo_Tana_Toraja.png" class="logo">
-
-  <h2>
-    Login Aplikasi Input Usulan<br>
-    Musrenbang Kelurahan T.A 2027
-  </h2>
-
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-
-  <button onclick="login()">Login</button>
-
-  <p class="info-app">
-    Aplikasi ini dibuat khusus untuk Kecamatan Makale Kabupaten Tana Toraja
-  </p>
-
-  <p class="developer">
-    © <span id="year"></span> Kecamatan Makale – Fuad Amry
-  </p>
-
-  <div id="error" class="error"></div>
-
-</div>
-
-<script>
-/* Tahun otomatis */
-document.getElementById("year").innerText = new Date().getFullYear();
-
-/* ===== LOGIN ===== */
-function login(){
-  const u = document.getElementById("username").value.trim().toLowerCase();
-  const p = document.getElementById("password").value.trim();
-  const error = document.getElementById("error");
-  error.innerText = "";
-
-  /* ADMIN */
-  if(u === "admin" && p === "admin123"){
-    localStorage.setItem("role","admin");
-    localStorage.setItem("kelurahan","ADMIN KECAMATAN");
-    window.location.href = "dashboard_admin.html";
-    return;
-  }
-
-  /* OPERATOR */
-  const operators = {
-    ariang: { pass:"ariang2027", kel:"Kelurahan Ariang" },
-    batupapan: { pass:"batupapan2027", kel:"Kelurahan Batupapan" },
-    bombongan: { pass:"bombongan2027", kel:"Kelurahan Bombongan" },
-    botang: { pass:"botang2027", kel:"Kelurahan Botang" },
-    buntuburake: { pass:"burake2027", kel:"Kelurahan Buntu Burake" },
-    kamali: { pass:"kamali2027", kel:"Kelurahan Kamali Pentalluan" },
-    lamunan: { pass:"lamunan2027", kel:"Kelurahan Lamunan" },
-    lapandan: { pass:"lapandan2027", kel:"Kelurahan Lapandan" },
-    lea: { pass:"lea2027", kel:"Lembang Lea" },
-    manggau: { pass:"manggau2027", kel:"Kelurahan Manggau" },
-    pantan: { pass:"pantan2027", kel:"Kelurahan Pantan" },
-    rante: { pass:"rante2027", kel:"Kelurahan Rante" },
-    tampo: { pass:"tampo2027", kel:"Kelurahan Tampo" },
-    tarongko: { pass:"tarongko2027", kel:"Kelurahan Tarongko" },
-    tondon: { pass:"tondon2027", kel:"Kelurahan Tondon Mamullu" }
-  };
-
-  if(operators[u] && p === operators[u].pass){
-    localStorage.setItem("role","operator");
-    localStorage.setItem("kelurahan", operators[u].kel);
-    window.location.href = "dashboard.html";
-    return;
-  }
-
-  error.innerText = "Username atau Password salah!";
-}
-</script>
-
+    <div class="box">
+        <img src="Logo_Tana_Toraja.png" width="80" alt="Logo">
+        <h3>Musrenbang Makale</h3>
+        <select id="user">
+            <option value="">-- Pilih Wilayah --</option>
+            <option value="admin">ADMIN KECAMATAN</option>
+            <option>Kelurahan Ariang</option><option>Kelurahan Batupapan</option><option>Kelurahan Bombongan</option>
+            <option>Kelurahan Botang</option><option>Kelurahan Buntu Burake</option><option>Kelurahan Kamali Pentalluan</option>
+            <option>Kelurahan Lamunan</option><option>Kelurahan Lapandan</option><option>Lembang Lea</option>
+            <option>Kelurahan Manggau</option><option>Kelurahan Pantan</option><option>Kelurahan Rante</option>
+            <option>Kelurahan Tampo Makale</option><option>Kelurahan Tarongko</option><option>Kelurahan Tondon Mamullu</option>
+        </select>
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="login()">MASUK</button>
+    </div>
+    <script>
+        function login() {
+            const u = document.getElementById("user").value;
+            const p = document.getElementById("pass").value;
+            if(u === "admin" && p === "admin123") {
+                localStorage.setItem("role", "admin");
+                localStorage.setItem("kelurahan", "ADMIN KECAMATAN");
+                location.href = "dashboard_admin.html";
+            } else if(u && p === "makale2027") {
+                localStorage.setItem("role", "operator");
+                localStorage.setItem("kelurahan", u);
+                location.href = "dashboard.html";
+            } else { alert("Password atau Wilayah Salah!"); }
+        }
+    </script>
 </body>
 </html>
