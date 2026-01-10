@@ -2,36 +2,37 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Input Usulan Musrenbang</title>
+    <title>Input Usulan Musrenbang Makale</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #edf2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h2 { margin-top: 0; color: #2d3748; border-bottom: 2px solid #3182ce; padding-bottom: 10px; font-size: 20px; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #edf2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 650px; }
+        h2 { margin-top: 0; color: #2d3748; border-bottom: 3px solid #3182ce; padding-bottom: 10px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #4a5568; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.1); }
-        .btn-submit { background: #3182ce; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn-submit { background: #3182ce; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .btn-submit:hover { background: #2b6cb0; }
-        .btn-back { display: block; text-align: center; margin-top: 15px; color: #718096; text-decoration: none; font-size: 14px; }
         .loading { display: none; text-align: center; color: #3182ce; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="form-card">
-    <h2>📝 Form Input Usulan</h2>
+    <h2>📝 Input Usulan Musrenbang</h2>
     <form id="usulanForm">
         <div class="form-group">
             <label>Kelurahan / Lembang</label>
             <select id="kelurahan" required>
-                <option value="">-- Pilih Kelurahan --</option>
-                <option>Bombongan</option><option>Kampung Baru</option><option>Lapandan</option>
-                <option>Lemo</option><option>Makale</option><option>Pantanalua</option>
-                <option>Tondon Mamullu</option><option>Ariang</option><option>Batupapan</option>
-                <option>Botang</option><option>Lea</option><option>Manggau</option>
-                <option>Sangga’tiku</option><option>Tandebura</option>
+                <option value="">-- Pilih Kelurahan/Lembang --</option>
+                <option>Kelurahan Ariang</option><option>Kelurahan Batupapan</option>
+                <option>Kelurahan Bombongan</option><option>Kelurahan Botang</option>
+                <option>Kelurahan Buntu Burake</option><option>Kelurahan Kamali Pentalluan</option>
+                <option>Kelurahan Lamunan</option><option>Kelurahan Lapandan</option>
+                <option>Lembang Lea</option><option>Kelurahan Manggau</option>
+                <option>Kelurahan Pantan</option><option>Kelurahan Rante</option>
+                <option>Kelurahan Tampo Makale</option><option>Kelurahan Tarongko</option>
+                <option>Kelurahan Tondon Mamullu</option>
             </select>
         </div>
 
@@ -55,7 +56,7 @@
             <input type="text" id="lokasi" placeholder="Contoh: Lingkungan RT 02 Dusun X" required>
         </div>
 
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
                 <label>Volume / Satuan</label>
                 <input type="text" id="volume" placeholder="Contoh: 500 Meter" required>
@@ -74,7 +75,7 @@
                 <option>Dinas Kesehatan</option><option>Pendidikan dan Kebudayaan</option><option>Disparpora</option>
                 <option>Dinas Sosial</option><option>Disdukcapil</option><option>Diskop UKM Perindag</option>
                 <option>DLHD</option><option>DPML</option><option>DPMPTSP</option><option>Dinas Perhubungan</option>
-                <option>DP3A dan KB</option><option>Dinas Perpustakaan dan Arsip Daerah</option>
+                <option>DP3A dan KB</option><option>Perpustakaan dan Arsip Daerah</option>
                 <option>Pertanian, Ketahanan Pangan dan Perikanan</option><option>Disnakertrans</option>
                 <option>Bappelitbangda</option><option>BPKPD</option><option>BKPSDM</option>
                 <option>Kesbangpol</option><option>BPBD</option><option>Inspektorat Daerah</option>
@@ -84,14 +85,13 @@
         </div>
 
         <div class="form-group">
-            <label>Keterangan Tambahan</label>
-            <textarea id="keterangan" rows="2" placeholder="Informasi pendukung lainnya..."></textarea>
+            <label>Keterangan</label>
+            <textarea id="keterangan" rows="2" placeholder="Keterangan tambahan..."></textarea>
         </div>
 
-        <button type="submit" class="btn-submit" id="submitBtn">Kirim Usulan Musrenbang</button>
-        <div id="loadingStatus" class="loading">Sedang mengirim data ke server...</div>
+        <button type="submit" class="btn-submit" id="submitBtn">Kirim Usulan</button>
+        <div id="loadingStatus" class="loading">Memproses data...</div>
     </form>
-    <a href="index.html" class="btn-back"> Kembali ke Beranda</a>
 </div>
 
 <script>
@@ -99,7 +99,6 @@
 
     document.getElementById("usulanForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-        
         const btn = document.getElementById("submitBtn");
         const loader = document.getElementById("loadingStatus");
         
@@ -113,28 +112,25 @@
             lokasi: document.getElementById("lokasi").value,
             volume: document.getElementById("volume").value,
             anggaran: document.getElementById("anggaran").value,
-            opd: document.getElementById("opd").value, // Data OPD Baru
+            opd: document.getElementById("opd").value,
             keterangan: document.getElementById("keterangan").value
         };
 
         try {
-            const response = await fetch(API_URL, {
+            await fetch(API_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
-
-            alert("✅ Usulan berhasil terkirim ke sistem!");
+            alert("✅ Sukses! Usulan berhasil terkirim.");
             document.getElementById("usulanForm").reset();
         } catch (error) {
-            alert("❌ Gagal mengirim data. Silakan cek koneksi internet.");
+            alert("❌ Error: Gagal mengirim data.");
         } finally {
             btn.style.display = "block";
             loader.style.display = "none";
         }
     });
 </script>
-
 </body>
 </html>
