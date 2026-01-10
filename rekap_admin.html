@@ -2,66 +2,94 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Rekapitulasi Kecamatan - Admin</title>
+    <title>Rekapitulasi Musrenbang Kecamatan</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f0f2f5; color: #333; }
-        .header { background: #1a202c; color: white; padding: 15px 25px; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+        .header { background: #1a202c; color: white; padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; }
         .container { padding: 20px; max-width: 1400px; margin: auto; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { margin: 0 0 15px 0; color: #2d3748; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; }
-        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        select, button { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-weight: bold; }
+        
+        /* Style untuk Kotak Ringkasan Anggaran */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .summary-box { padding: 20px; border-radius: 8px; color: white; }
+        .bg-blue { background: #3182ce; }
+        .bg-green { background: #38a169; }
+        .summary-box h4 { margin: 0; font-size: 14px; opacity: 0.9; }
+        .summary-box div { font-size: 24px; font-weight: bold; margin-top: 5px; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        select, button { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-weight: bold; cursor: pointer; }
         .btn-refresh { background: #3182ce; color: white; border: none; }
         .btn-excel { background: #38a169; color: white; border: none; }
         .btn-pdf { background: #e53e3e; color: white; border: none; }
-        .btn-back { background: #718096; color: white; border: none; }
+
         table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #edf2f7; padding: 10px; text-align: left; font-size: 12px; vertical-align: top; }
-        th { background: #f7fafc; color: #4a5568; }
+        th, td { border: 1px solid #edf2f7; padding: 12px; text-align: left; font-size: 12px; }
+        th { background: #f7fafc; color: #4a5568; position: sticky; top: 0; }
+        tr:nth-child(even) { background-color: #fcfcfc; }
+        .text-right { text-align: right; font-weight: bold; }
 
         @media print {
             @page { size: landscape; margin: 0.5cm; }
-            .no-print, .header, .toolbar { display: none !important; }
-            .card { box-shadow: none; border: none; padding: 0; }
-            table { width: 100%; border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 6px; font-size: 10px; }
+            .no-print, .btn-refresh, .btn-excel, .btn-pdf { display: none !important; }
+            .summary-box { color: black; border: 1px solid #ccc; background: none !important; padding: 10px; }
+            table { font-size: 10px; }
+            th, td { border: 1px solid #000; padding: 6px; }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <strong>Dashboard Admin - Rekapitulasi Musrenbang Kecamatan</strong>
+<div class="header no-print">
+    <strong>Dashboard Admin - Musrenbang Kecamatan</strong>
+    <span id="lastUpdate" style="font-size: 12px; font-weight: normal;"></span>
 </div>
 
 <div class="container">
+    <div class="summary-grid">
+        <div class="summary-box bg-blue">
+            <h4>Total Anggaran Kecamatan (Seluruh Usulan)</h4>
+            <div id="totalKecamatan">Rp 0</div>
+        </div>
+        <div class="summary-box bg-green">
+            <h4>Total Anggaran Terfilter (Per Kelurahan/Bidang)</h4>
+            <div id="totalFilter">Rp 0</div>
+        </div>
+    </div>
+
     <div class="card no-print">
-        <h2>🔍 Filter & Kontrol</h2>
+        <h2>🔍 Filter Rekapitulasi</h2>
         <div class="toolbar">
-            <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
-            <select id="filterBid" onchange="filterData()">
-                <option value="">Semua Bidang</option>
-                <option>Bidang Sarana dan Prasarana</option>
-                <option>Bidang Sosial Budaya</option>
-                <option>Bidang Ekonomi</option>
-            </select>
-            <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Sinkronisasi Cloud</button>
-            <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
-            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak PDF</button>
-            <button class="btn-back" onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
+            <div class="filter-group">
+                <label>Kelurahan/Lembang</label>
+                <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Bidang Program</label>
+                <select id="filterBid" onchange="filterData()">
+                    <option value="">Semua Bidang</option>
+                    <option>Bidang Sarana dan Prasarana</option>
+                    <option>Bidang Sosial Budaya</option>
+                    <option>Bidang Ekonomi</option>
+                </select>
+            </div>
+            <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Perbarui Data</button>
+            <button class="btn-excel" onclick="exportExcel()">📤 Simpan Excel</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak Laporan</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>📄 Data Seluruh Usulan Kecamatan</h2>
+        <h2 id="tableTitle">📄 Daftar Usulan Musrenbang</h2>
         <div style="overflow-x: auto;">
             <table id="tableAdmin">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width:30px;">No</th>
                         <th>Kelurahan</th>
                         <th>Bidang</th>
-                        <th>Kegiatan</th>
+                        <th>Nama Kegiatan</th>
                         <th>Lokasi</th>
                         <th>Volume</th>
                         <th>Anggaran (Rp)</th>
@@ -69,7 +97,7 @@
                     </tr>
                 </thead>
                 <tbody id="tbody">
-                    <tr><td colspan="8" style="text-align:center; padding: 30px;">Menarik data dari cloud...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; padding: 40px;">Mengambil data terbaru...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -82,20 +110,38 @@
 
     async function muatDataAdmin() {
         const tbody = document.getElementById("tbody");
-        tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>Menghubungkan ke server...</td></tr>";
         try {
             const resp = await fetch(API_URL + "?t=" + new Date().getTime());
             dataCloud = await resp.json();
             
+            // Update Dropdown Filter Kelurahan
             const kelList = [...new Set(dataCloud.map(d => d.kelurahan))].filter(k => k).sort();
             const filterKel = document.getElementById("filterKel");
             filterKel.innerHTML = '<option value="">Semua Kelurahan</option>';
             kelList.forEach(k => filterKel.innerHTML += `<option value="${k}">${k}</option>`);
 
-            tampilkan(dataCloud);
+            // Hitung Total Kecamatan
+            const total = dataCloud.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
+            document.getElementById("totalKecamatan").innerText = "Rp " + total.toLocaleString('id-ID');
+            document.getElementById("lastUpdate").innerText = "Update Terakhir: " + new Date().toLocaleTimeString();
+
+            filterData();
         } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:red'>Gagal memuat data.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:red'>Gagal memuat data cloud.</td></tr>";
         }
+    }
+
+    function filterData() {
+        const k = document.getElementById("filterKel").value;
+        const b = document.getElementById("filterBid").value;
+        
+        const filtered = dataCloud.filter(d => (!k || d.kelurahan === k) && (!b || d.bidang === b));
+        
+        // Update Total Filtered
+        const totalF = filtered.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
+        document.getElementById("totalFilter").innerText = "Rp " + totalF.toLocaleString('id-ID');
+        
+        tampilkan(filtered);
     }
 
     function tampilkan(data) {
@@ -109,26 +155,20 @@
                 <td>${d.kegiatan || '-'}</td>
                 <td>${d.lokasi || '-'}</td>
                 <td>${d.volume || '-'}</td>
-                <td>${d.anggaran ? Number(d.anggaran).toLocaleString('id-ID') : '0'}</td>
+                <td class="text-right">${d.anggaran ? Number(d.anggaran).toLocaleString('id-ID') : '0'}</td>
                 <td>${d.keterangan || '-'}</td>
             </tr>`;
         });
     }
 
-    function filterData() {
-        const k = document.getElementById("filterKel").value;
-        const b = document.getElementById("filterBid").value;
-        const filtered = dataCloud.filter(d => (!k || d.kelurahan === k) && (!b || d.bidang === b));
-        tampilkan(filtered);
-    }
-
     function exportExcel() {
         const table = document.getElementById("tableAdmin");
-        const html = `<html><head><meta charset="UTF-8"></head><body><h2>REKAPITULASI KECAMATAN</h2>${table.outerHTML}</body></html>`;
+        const k = document.getElementById("filterKel").value || "Kecamatan";
+        const html = `<html><head><meta charset="UTF-8"></head><body><h2>REKAPITULASI USULAN - ${k}</h2>${table.outerHTML}</body></html>`;
         const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `Rekap_Musrenbang_Kecamatan.xls`;
+        a.download = `Rekap_Musrenbang_${k}.xls`;
         a.click();
     }
 
