@@ -21,7 +21,7 @@
 <body>
     <div class="header">
         <img src="Logo_Tana_Toraja.png" class="logo">
-        <strong>Rekapitulasi Usulan Kecamatan (Data Cloud)</strong>
+        <strong>Rekapitulasi Usulan (Data Cloud Google Sheets)</strong>
     </div>
 
     <div class="container">
@@ -49,19 +49,23 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx5GcGHWBBuUvZ9zWzyzMl3PjvhQXvTrAPnLpbCHvhVCAR0Jc_w3ENIec589FJIpTdc/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
         let dataCloud = [];
 
         async function muatData() {
             const tbody = document.getElementById("tbody");
             tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Memuat data dari Google Sheets...</td></tr>";
             try {
-                const resp = await fetch(API_URL);
+                // Tambahkan no-cache agar data selalu fresh
+                const resp = await fetch(API_URL + "?t=" + new Date().getTime());
                 dataCloud = await resp.json();
                 const listKel = [...new Set(dataCloud.map(d => d.kelurahan))];
-                listKel.forEach(k => { document.getElementById("filterKel").innerHTML += `<option>${k}</option>`; });
+                const filterKel = document.getElementById("filterKel");
+                listKel.forEach(k => { if(k) filterKel.innerHTML += `<option>${k}</option>`; });
                 tampilkan();
-            } catch (e) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal memuat data cloud.</td></tr>"; }
+            } catch (e) { 
+                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal memuat data cloud. Pastikan Apps Script sudah di-deploy sebagai 'Anyone'.</td></tr>"; 
+            }
         }
 
         function tampilkan() {

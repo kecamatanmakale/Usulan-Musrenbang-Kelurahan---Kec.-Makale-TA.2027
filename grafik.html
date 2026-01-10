@@ -23,13 +23,13 @@
     </div>
     <div class="container">
         <div class="card">
-            <h3>📊 Grafik Anggaran per Bidang (Real-time)</h3>
+            <h3>📊 Grafik Anggaran per Bidang (Real-time Cloud)</h3>
             <div id="grafikArea">Memuat grafik...</div>
             <button onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
         </div>
     </div>
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx5GcGHWBBuUvZ9zWzyzMl3PjvhQXvTrAPnLpbCHvhVCAR0Jc_w3ENIec589FJIpTdc/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
         const colors = { "Bidang Sarana dan Prasarana": "#2c7be5", "Bidang Sosial Budaya": "#e63946", "Bidang Ekonomi": "#2a9d8f", "Default": "#6c757d" };
 
         async function muatGrafik() {
@@ -51,7 +51,7 @@
                             <div class="bar-bg"><div class="bar-fill" style="width:${persen}%; background:${colors[b] || colors.Default}">${Math.round(persen)}%</div></div>
                         </div>`;
                 }
-            } catch(e) { document.getElementById("grafikArea").innerHTML = "Gagal memuat data cloud."; }
+            } catch(e) { document.getElementById("grafikArea").innerHTML = "Data Cloud belum tersedia atau format salah."; }
         }
         muatGrafik();
     </script>
