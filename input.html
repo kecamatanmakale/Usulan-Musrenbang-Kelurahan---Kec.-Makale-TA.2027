@@ -4,47 +4,55 @@
     <meta charset="UTF-8">
     <title>Input Usulan Musrenbang</title>
     <style>
-        body { font-family: Arial; background: #f4f6f9; margin: 0; }
+        body { margin: 0; font-family: Arial; background: #f4f6f9; }
         .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
         .logo { width: 45px; margin-right: 15px; }
         .container { padding: 20px; }
         .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         input, select, textarea, button { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; }
-        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
         button.secondary { background: #6c757d; }
+        button.danger { background: #dc3545; }
+        button.warning { background: #ffc107; color: black; }
+        button.success { background: #28a745; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #f8f9fa; }
-        .btn-export { background: #28a745; margin-bottom: 10px; }
+        @media print { .header, .card:first-child, button, .no-print { display: none !important; } .card { box-shadow: none; border: none; } }
     </style>
 </head>
 <body>
     <div class="header">
         <img src="Logo_Tana_Toraja.png" class="logo">
-        <strong id="labelKelurahan">Input Usulan</strong>
+        <strong id="judulHeader">Input Usulan Musrenbang</strong>
     </div>
 
     <div class="container">
-        <div class="card">
-            <h4>Form Tambah Usulan</h4>
+        <div class="card no-print">
+            <h3>➕ Form Tambah Usulan</h3>
+            <input type="hidden" id="editIndex">
+            <label>Kelurahan: <input id="kelurahanDisp" readonly style="background:#eee"></label>
             <select id="bidang">
                 <option value="">-- Pilih Bidang --</option>
-                <option>Sarana dan Prasarana</option>
-                <option>Sosial Budaya</option>
-                <option>Ekonomi</option>
+                <option>Bidang Sarana dan Prasarana</option>
+                <option>Bidang Sosial Budaya</option>
+                <option>Bidang Ekonomi</option>
             </select>
-            <input id="kegiatan" placeholder="Nama Kegiatan">
+            <textarea id="kegiatan" placeholder="Nama Kegiatan"></textarea>
             <input id="lokasi" placeholder="Lokasi Spesifik">
             <input id="volume" placeholder="Volume (Contoh: 100 Meter)">
             <input id="anggaran" type="number" placeholder="Estimasi Anggaran (Rp)">
             <textarea id="keterangan" placeholder="Keterangan tambahan..."></textarea>
-            <button onclick="simpan()">Kirim Usulan ke Cloud</button>
-            <button class="secondary" onclick="location.href='dashboard.html'">Kembali ke Dashboard</button>
+            <button onclick="simpanUsulan()">💾 Simpan & Kirim ke Cloud</button>
+            <button class="secondary" onclick="location.href='dashboard.html'">⬅ Kembali ke Dashboard</button>
         </div>
 
-        <div class="card" style="overflow-x:auto;">
-            <h4>Data Usulan Lokal (Hanya Sesi Ini)</h4>
-            <button class="btn-export" onclick="exportExcel()">Export Excel (.xls)</button>
+        <div class="card">
+            <h3>📄 Data Usulan Kelurahan</h3>
+            <div class="no-print" style="display: flex; gap: 10px;">
+                <button class="success" onclick="exportExcel()">📤 Export Excel</button>
+                <button class="danger" onclick="window.print()">🖨️ Print PDF</button>
+            </div>
             <table id="tabelData">
                 <thead>
                     <tr>
@@ -52,7 +60,8 @@
                         <th>Bidang</th>
                         <th>Kegiatan</th>
                         <th>Lokasi</th>
-                        <th>Anggaran</th>
+                        <th>Anggaran (Rp)</th>
+                        <th class="no-print">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tbody"></tbody>
@@ -61,15 +70,16 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx5GcGHWBBuUvZ9zWzyzMl3PjvhQXvTrAPnLpbCHvhVCAR0Jc_w3ENIec589FJIpTdc/exec"; // GANTI DENGAN URL APPS SCRIPT ANDA
-        const kelurahan = localStorage.getItem("kelurahan") || "Umum";
-        document.getElementById("labelKelurahan").innerText = "Input Usulan: " + kelurahan;
+        const API_URL = "https://script.google.com/macros/s/AKfycbx5GcGHWBBuUvZ9zWzyzMl3PjvhQXvTrAPnLpbCHvhVCAR0Jc_w3ENIec589FJIpTdc/exec";
+        const kelurahanLogin = localStorage.getItem("kelurahan") || "Umum";
+        document.getElementById("judulHeader").innerText = "Musrenbang - " + kelurahanLogin;
+        document.getElementById("kelurahanDisp").value = kelurahanLogin;
 
-        let dataLokal = [];
+        let dataUsulan = JSON.parse(localStorage.getItem("dataUsulan")) || [];
 
-        async function simpan() {
+        function simpanUsulan() {
             const data = {
-                kelurahan: kelurahan,
+                kelurahan: kelurahanLogin,
                 bidang: document.getElementById("bidang").value,
                 kegiatan: document.getElementById("kegiatan").value,
                 lokasi: document.getElementById("lokasi").value,
@@ -78,48 +88,76 @@
                 keterangan: document.getElementById("keterangan").value
             };
 
-            if(!data.bidang || !data.kegiatan || !data.anggaran) return alert("Mohon isi Bidang, Kegiatan, dan Anggaran!");
+            if (!data.bidang || !data.kegiatan) return alert("Isi Bidang dan Kegiatan!");
 
-            // Kirim ke Google Sheets
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+            const idx = document.getElementById("editIndex").value;
+            if (idx === "") {
+                dataUsulan.push(data);
+                fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
+                alert("Data berhasil dikirim ke Cloud!");
+            } else {
+                dataUsulan[idx] = data;
+                document.getElementById("editIndex").value = "";
+                alert("Data diperbarui secara lokal!");
+            }
 
-            // Simpan ke tampilan tabel sementara
-            dataLokal.push(data);
+            localStorage.setItem("dataUsulan", JSON.stringify(dataUsulan));
+            resetForm();
             tampilkan();
-            alert("Data Berhasil Terkirim ke Cloud!");
-            
-            // Reset Form
-            document.querySelectorAll("input, textarea, select").forEach(i => i.value = "");
         }
 
         function tampilkan() {
             const tbody = document.getElementById("tbody");
             tbody.innerHTML = "";
-            dataLokal.forEach((d, i) => {
+            dataUsulan.filter(d => d.kelurahan === kelurahanLogin).forEach((d, i) => {
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
                     <td>${d.bidang}</td>
                     <td>${d.kegiatan}</td>
                     <td>${d.lokasi}</td>
                     <td>${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                    <td class="no-print">
+                        <button class="warning" style="width:auto; padding:5px 10px;" onclick="edit(${i})">Edit</button>
+                        <button class="danger" style="width:auto; padding:5px 10px;" onclick="hapus(${i})">Hapus</button>
+                    </td>
                 </tr>`;
             });
         }
 
+        function edit(i) {
+            const d = dataUsulan[i];
+            document.getElementById("bidang").value = d.bidang;
+            document.getElementById("kegiatan").value = d.kegiatan;
+            document.getElementById("lokasi").value = d.lokasi;
+            document.getElementById("volume").value = d.volume;
+            document.getElementById("anggaran").value = d.anggaran;
+            document.getElementById("keterangan").value = d.keterangan;
+            document.getElementById("editIndex").value = i;
+            window.scrollTo(0,0);
+        }
+
+        function hapus(i) {
+            if(confirm("Hapus usulan ini?")) {
+                dataUsulan.splice(i, 1);
+                localStorage.setItem("dataUsulan", JSON.stringify(dataUsulan));
+                tampilkan();
+            }
+        }
+
         function exportExcel() {
-            let table = document.getElementById("tabelData").outerHTML;
-            let html = `<html><head><meta charset="UTF-8"></head><body><h2>Usulan ${kelurahan}</h2>${table}</body></html>`;
+            let table = document.getElementById("tabelData").cloneNode(true);
+            let rows = table.rows;
+            for (let i = 0; i < rows.length; i++) { rows[i].deleteCell(-1); }
+            let html = `<html><head><meta charset="UTF-8"></head><body><h2>Usulan ${kelurahanLogin}</h2>${table.outerHTML}</body></html>`;
             let blob = new Blob([html], {type: "application/vnd.ms-excel"});
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = `Usulan_${kelurahan}.xls`;
+            a.download = `Usulan_${kelurahanLogin}.xls`;
             a.click();
         }
+
+        function resetForm() { document.querySelectorAll("input, textarea, select").forEach(i => { if(i.id!=="kelurahanDisp") i.value = ""; }); }
+        tampilkan();
     </script>
 </body>
 </html>
