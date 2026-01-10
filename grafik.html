@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <title>Grafik Musrenbang</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #f4f6f9; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f6f9; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
         .bar-container { margin-top: 30px; }
-        .bar-item { margin-bottom: 20px; }
-        .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; }
-        .bar-bg { background: #e2e8f0; height: 25px; border-radius: 12px; overflow: hidden; }
-        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; transition: width 1s; }
+        .bar-item { margin-bottom: 25px; }
+        .bar-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        .bar-bg { background: #e2e8f0; height: 30px; border-radius: 15px; overflow: hidden; }
+        .bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; transition: width 1s ease-in-out; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="text-align:center">📊 Distribusi Anggaran Per Bidang</h2>
+    <h2 style="text-align:center; color:#2d3748;">📊 Analisis Anggaran Per Bidang (Kecamatan)</h2>
     <div id="grafikArea" class="bar-container">
-        <p style="text-align:center">Menganalisis data cloud...</p>
+        <p style="text-align:center;">Memproses data usulan...</p>
     </div>
-    <button onclick="location.href='dashboard_admin.html'" style="width:100%; margin-top:20px; padding:10px; cursor:pointer">Kembali ke Dashboard</button>
+    <button onclick="location.href='dashboard_admin.html'" style="width:100%; margin-top:30px; padding:12px; cursor:pointer; background:#718096; color:white; border:none; border-radius:6px; font-weight:bold;">⬅ Kembali ke Dashboard</button>
 </div>
 
 <script>
@@ -35,7 +35,7 @@
     async function muatGrafik() {
         const area = document.getElementById("grafikArea");
         try {
-            const resp = await fetch(API_URL);
+            const resp = await fetch(API_URL + "?t=" + new Date().getTime());
             const data = await resp.json();
             
             const rekap = {};
@@ -49,7 +49,13 @@
             });
 
             area.innerHTML = "";
-            for(let b in rekap) {
+            const keys = Object.keys(rekap);
+            if(keys.length === 0) {
+                area.innerHTML = "<p style='text-align:center'>Belum ada data untuk ditampilkan.</p>";
+                return;
+            }
+
+            keys.forEach(b => {
                 const persen = totalMax > 0 ? (rekap[b] / totalMax) * 100 : 0;
                 area.innerHTML += `
                     <div class="bar-item">
@@ -58,8 +64,8 @@
                             <div class="bar-fill" style="width:${persen}%; background:${colors[b] || colors.Default}">${Math.round(persen)}%</div>
                         </div>
                     </div>`;
-            }
-        } catch(e) { area.innerHTML = "Gagal memuat grafik."; }
+            });
+        } catch(e) { area.innerHTML = "<p style='color:red; text-align:center;'>Gagal memuat grafik dari Cloud.</p>"; }
     }
     muatGrafik();
 </script>

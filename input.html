@@ -4,26 +4,29 @@
     <meta charset="UTF-8">
     <title>Input Usulan Musrenbang</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; }
-        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #333; }
+        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 15px 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .logo { width: 45px; margin-right: 15px; }
         .container { padding: 20px; max-width: 1200px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        input, select, textarea, button { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
-        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .btn-excel { background: #28a745; width: auto; padding: 10px 20px; }
+        .card { background: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #2c7be5; border-bottom: 2px solid #eef2f7; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
+        input, select, textarea, button { width: 100%; padding: 12px; margin-top: 8px; box-sizing: border-box; border: 1px solid #dcdfe6; border-radius: 6px; font-size: 14px; }
+        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; margin-top: 20px; }
+        button:hover { background: #1a68d1; }
+        .btn-excel { background: #28a745; width: auto; margin-right: 10px; padding: 10px 20px; }
         .btn-pdf { background: #dc3545; width: auto; padding: 10px 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
-        th { background: #f8f9fa; }
-        .loading { text-align: center; font-weight: bold; color: #2c7be5; padding: 20px; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 13px; vertical-align: top; }
+        th { background: #f8f9fa; color: #495057; }
 
         @media print {
             @page { size: landscape; margin: 1cm; }
             .no-print, .header, button { display: none !important; }
-            .card { box-shadow: none; border: none; }
+            .card { box-shadow: none; border: none; padding: 0; }
             table { width: 100%; border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 5px; font-size: 10px; }
+            th, td { border: 1px solid #000; padding: 8px; font-size: 11px; }
+            body { background: white; }
         }
     </style>
 </head>
@@ -31,41 +34,47 @@
 
 <div class="header">
     <img src="Logo_Tana_Toraja.png" class="logo">
-    <strong id="judulHeader">Musrenbang</strong>
+    <strong id="judulHeader">Musrenbang - Loading...</strong>
 </div>
 
 <div class="container">
     <div class="card no-print">
-        <h3>➕ Form Input Usulan permanen</h3>
-        <label>Kelurahan:</label>
-        <input id="kelurahan" readonly style="background:#eee">
+        <h3>➕ Form Tambah Usulan Baru</h3>
+        <label>Kelurahan / Lembang</label>
+        <input id="kelurahan" readonly style="background: #f8f9fa;">
+        <label>Bidang Program</label>
         <select id="bidang">
             <option value="">-- Pilih Bidang --</option>
             <option>Bidang Sarana dan Prasarana</option>
             <option>Bidang Sosial Budaya</option>
             <option>Bidang Ekonomi</option>
         </select>
-        <textarea id="kegiatan" placeholder="Nama Kegiatan"></textarea>
-        <input id="lokasi" placeholder="Lokasi Spesifik">
-        <input id="volume" placeholder="Volume (Contoh: 100 Meter)">
-        <input id="anggaran" type="number" placeholder="Anggaran (Rp)">
-        <textarea id="keterangan" placeholder="Keterangan Tambahan (Akan muncul di tabel dan cetakan)"></textarea>
+        <label>Nama Kegiatan</label>
+        <textarea id="kegiatan" placeholder="Contoh: Pengaspalan Jalan Lingkungan"></textarea>
+        <label>Lokasi Spesifik</label>
+        <input id="lokasi" placeholder="Contoh: Dusun Marampa">
+        <label>Volume / Satuan</label>
+        <input id="volume" placeholder="Contoh: 500 Meter">
+        <label>Estimasi Anggaran (Rp)</label>
+        <input id="anggaran" type="number" placeholder="Masukkan angka saja">
+        <label>Keterangan Tambahan</label>
+        <textarea id="keterangan" placeholder="Isi catatan tambahan di sini..."></textarea>
         
         <button id="btnSimpan" onclick="simpanData()">💾 Simpan & Kirim ke Cloud</button>
-        <button style="background:#6c757d" onclick="location.href='dashboard.html'">⬅ Kembali</button>
+        <button style="background: #6c757d;" onclick="location.href='dashboard.html'">⬅ Kembali ke Dashboard</button>
     </div>
 
     <div class="card">
         <h3 id="tabelJudul">📄 Daftar Usulan</h3>
-        <div class="no-print" style="margin-bottom: 15px;">
+        <div class="no-print" style="margin-bottom: 20px;">
             <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
-            <button class="btn-pdf" onclick="window.print()">🖨️ Print PDF</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak ke PDF</button>
         </div>
         <div style="overflow-x: auto;">
-            <table id="tableData">
+            <table id="mainTable">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width: 40px;">No</th>
                         <th>Bidang</th>
                         <th>Kegiatan</th>
                         <th>Lokasi</th>
@@ -74,7 +83,7 @@
                     </tr>
                 </thead>
                 <tbody id="tbody">
-                    <tr><td colspan="6" class="loading">Menyinkronkan data dengan Cloud...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;">Menyinkronkan data dengan Cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -96,13 +105,17 @@
             const filtered = data.filter(d => d.kelurahan === kelurahanLogin);
             renderTabel(filtered);
         } catch (e) {
-            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center;color:red'>Gagal sinkron Cloud. Menampilkan data lokal terakhir.</td></tr>";
+            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal sinkron Cloud. Menampilkan data terakhir.</td></tr>";
         }
     }
 
     function renderTabel(data) {
         const tbody = document.getElementById("tbody");
         tbody.innerHTML = "";
+        if (data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Belum ada riwayat usulan.</td></tr>";
+            return;
+        }
         data.forEach((d, i) => {
             tbody.innerHTML += `<tr>
                 <td>${i + 1}</td>
@@ -113,7 +126,6 @@
                 <td>${d.keterangan || '-'}</td>
             </tr>`;
         });
-        if(data.length === 0) tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Belum ada usulan.</td></tr>";
     }
 
     async function simpanData() {
@@ -128,26 +140,20 @@
             keterangan: document.getElementById("keterangan").value
         };
 
-        if(!payload.bidang || !payload.kegiatan) return alert("Mohon lengkapi Bidang dan Kegiatan!");
-
+        if(!payload.bidang || !payload.kegiatan) return alert("Bidang dan Kegiatan wajib diisi!");
         btn.disabled = true;
-        btn.innerText = "⌛ Mengirim...";
+        btn.innerText = "⌛ Memproses...";
 
         try {
             await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("Data Berhasil Tersimpan Secara Permanen!");
-            resetForm();
-            muatData();
-        } catch (e) { alert("Gagal Simpan!"); }
-        finally { btn.disabled = false; btn.innerText = "💾 Simpan & Kirim ke Cloud"; }
-    }
-
-    function resetForm() {
-        ["bidang", "kegiatan", "lokasi", "volume", "anggaran", "keterangan"].forEach(id => document.getElementById(id).value = "");
+            alert("Data berhasil disimpan secara permanen di Cloud!");
+            location.reload();
+        } catch (e) { alert("Gagal menyimpan data."); }
+        finally { btn.disabled = false; }
     }
 
     function exportExcel() {
-        const table = document.getElementById("tableData");
+        const table = document.getElementById("mainTable");
         const html = `<html><head><meta charset="UTF-8"></head><body>${table.outerHTML}</body></html>`;
         const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
