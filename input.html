@@ -1,235 +1,211 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Input Usulan Musrenbang</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Usulan Musrenbang</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #333; }
+        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 15px 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { width: 45px; margin-right: 15px; }
+        .container { padding: 20px; max-width: 1000px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #2c7be5; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; color: #555; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; box-sizing: border-box; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; transition: border 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: #2c7be5; outline: none; }
+        button { width: 100%; padding: 14px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.3s; }
+        .btn-primary { background: #2c7be5; color: white; }
+        .btn-primary:hover { background: #1a68d1; }
+        .btn-primary:disabled { background: #a0cfff; cursor: not-allowed; }
+        .btn-secondary { background: #6c757d; color: white; margin-top: 10px; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-excel { background: #28a745; color: white; width: auto; padding: 10px 20px; }
+        .btn-pdf { background: #dc3545; color: white; width: auto; padding: 10px 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ebeef5; padding: 12px; text-align: left; font-size: 13px; }
+        th { background: #f8f9fa; color: #606266; text-transform: uppercase; font-size: 12px; }
+        tr:nth-child(even) { background-color: #fafafa; }
+        .loading { text-align: center; color: #2c7be5; font-weight: bold; padding: 30px; }
 
-<style>
-body { margin: 0; font-family: Arial; background: #f4f6f9; }
-.header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
-.logo { width: 45px; margin-right: 15px; }
-.container { padding: 20px; }
-.card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-input, select, textarea, button { width: 100%; padding: 8px; margin-top: 8px; box-sizing: border-box; }
-textarea { resize: vertical; }
-button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
-button.edit { background: #ffc107; color: #000; width: auto; padding: 5px 10px; margin-right: 5px; }
-button.hapus { background: #dc3545; width: auto; padding: 5px 10px; }
-button.success { background: #28a745; width: auto; padding: 10px 20px; }
-button.danger { background: #dc3545; width: auto; padding: 10px 20px; }
-button.secondary { background: #6c757d; }
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-th { background: #f8f9fa; }
-@media print { .no-print, .header, .card:first-child, button { display: none !important; } .card { box-shadow: none; border: none; } }
-</style>
+        @media print { .no-print, .header, button { display: none !important; } .card { box-shadow: none; border: 1px solid #eee; } }
+    </style>
 </head>
-
 <body>
 
 <div class="header">
-  <img src="Logo_Tana_Toraja.png" class="logo">
-  <strong id="judulHeader">Musrenbang Kelurahan</strong>
+    <img src="Logo_Tana_Toraja.png" class="logo">
+    <strong id="judulHeader">Musrenbang - Loading...</strong>
 </div>
 
 <div class="container">
+    <div class="card no-print">
+        <h3>➕ Form Tambah Usulan</h3>
+        <label>Kelurahan / Lembang:</label>
+        <input id="kelurahan" readonly style="background: #f0f2f5;">
 
-<div class="card no-print">
-  <h3>➕ Input Usulan Musrenbang</h3>
-  <input type="hidden" id="editIndex">
+        <label>Bidang Program:</label>
+        <select id="bidang">
+            <option value="">-- Pilih Bidang --</option>
+            <option>Bidang Sarana dan Prasarana</option>
+            <option>Bidang Sosial Budaya</option>
+            <option>Bidang Ekonomi</option>
+        </select>
 
-  <label>Kelurahan</label>
-  <input id="kelurahan" readonly style="background:#eee">
+        <label>Nama Kegiatan:</label>
+        <textarea id="kegiatan" placeholder="Contoh: Pengadaan Bibit Kopi Arabika"></textarea>
 
-  <label>Bidang Program</label>
-  <select id="bidang">
-    <option value="">-- Pilih Bidang Program --</option>
-    <option>Bidang Sarana dan Prasarana</option>
-    <option>Bidang Sosial Budaya</option>
-    <option>Bidang Ekonomi</option>
-  </select>
+        <label>Lokasi Spesifik:</label>
+        <input id="lokasi" placeholder="Contoh: RT 01 / Dusun B">
 
-  <label>Nama Kegiatan</label>
-  <textarea id="kegiatan" placeholder="Contoh: Rehabilitasi Jalan Lingkungan"></textarea>
+        <label>Volume / Satuan:</label>
+        <input id="volume" placeholder="Contoh: 500 Pohon">
 
-  <label>Lokasi</label>
-  <input id="lokasi" placeholder="Lokasi spesifik">
+        <label>Estimasi Anggaran (Rp):</label>
+        <input id="anggaran" type="number" placeholder="Contoh: 25000000">
 
-  <label>Volume</label>
-  <input id="volume" placeholder="Contoh: 100 Meter / 1 Unit">
+        <label>Keterangan Tambahan:</label>
+        <textarea id="keterangan" placeholder="Catatan tambahan (opsional)"></textarea>
 
-  <label>Anggaran (Rp)</label>
-  <input id="anggaran" type="number" placeholder="Masukkan angka saja">
+        <button id="btnSimpan" class="btn-primary" onclick="simpanKeCloud()">💾 Simpan & Kirim ke Cloud</button>
+        <button class="btn-secondary" onclick="location.href='dashboard.html'">⬅ Kembali ke Dashboard</button>
+    </div>
 
-  <label>Keterangan</label>
-  <textarea id="keterangan" placeholder="Keterangan tambahan..."></textarea>
-
-  <button id="btnSimpan" onclick="simpanUsulan()">💾 Simpan & Kirim ke Cloud</button>
-  <button class="secondary" onclick="kembali()">⬅ Kembali ke Dashboard</button>
-</div>
-
-<div class="card">
-  <h3 id="tabelJudul">📄 Memuat Data Usulan...</h3>
-  
-  <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 15px;">
-    <button class="success" onclick="exportExcel()">📤 Export Excel</button>
-    <button class="danger" onclick="window.print()">🖨️ Print PDF</button>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Bidang</th>
-        <th>Kegiatan</th>
-        <th>Lokasi</th>
-        <th>Anggaran (Rp)</th>
-        <th class="no-print">Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="tabelUsulan"></tbody>
-  </table>
-</div>
-
+    <div class="card">
+        <h3 id="tabelJudul">📄 Daftar Usulan Kelurahan</h3>
+        <div class="no-print btn-group">
+            <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak PDF</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">No</th>
+                        <th>Bidang</th>
+                        <th>Kegiatan</th>
+                        <th>Lokasi</th>
+                        <th>Anggaran (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <tr><td colspan="5" class="loading">Menyinkronkan data dari Cloud...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
-const kelurahanLogin = localStorage.getItem("kelurahan") || "Umum";
-
-// Setup Judul
-judulHeader.innerText = "Musrenbang - " + kelurahanLogin;
-kelurahan.value = kelurahanLogin;
-document.getElementById("tabelJudul").innerText = "📄 Daftar Usulan " + kelurahanLogin;
-
-let dataUsulan = [];
-
-/* ================= AMBIL DATA DARI CLOUD (SETIAP REFRESH/LOGIN) ================= */
-async function muatDataDariCloud() {
-  const tbody = document.getElementById("tabelUsulan");
-  tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Menyinkronkan data dengan Cloud...</td></tr>";
-  
-  try {
-    const resp = await fetch(API_URL);
-    const allData = await resp.json();
+    // URL API dari Google Apps Script Anda
+    const API_URL = "https://script.google.com/macros/s/AKfycbyjLcO6HOsA1yPKizXf6IqnqeSTIlgRPRfITkcnWuGIiuQPLzumwsnHq63H2AQSmfPo/exec";
     
-    // Filter hanya data milik kelurahan ini
-    dataUsulan = allData.filter(d => d.kelurahan === kelurahanLogin);
-    tampilkan();
-  } catch (e) {
-    console.error(e);
-    // Jika cloud gagal, coba ambil dari local storage sebagai cadangan
-    dataUsulan = JSON.parse(localStorage.getItem("dataUsulan")) || [];
-    tampilkan();
-    alert("Gagal sinkron dengan Cloud. Menampilkan data lokal terakhir.");
-  }
-}
+    // Ambil data identitas login
+    const kelurahanLogin = localStorage.getItem("kelurahan") || "Umum";
 
-/* ================= TAMPILKAN TABEL ================= */
-function tampilkan() {
-  const tbody = document.getElementById("tabelUsulan");
-  tbody.innerHTML = "";
-  let no = 1;
+    // Atur Judul dan Input secara otomatis
+    document.getElementById("kelurahan").value = kelurahanLogin;
+    document.getElementById("judulHeader").innerText = "Musrenbang - " + kelurahanLogin;
+    document.getElementById("tabelJudul").innerText = "📄 Daftar Usulan " + kelurahanLogin;
 
-  dataUsulan.forEach((d, i) => {
-    tbody.innerHTML += `
-    <tr>
-      <td>${no++}</td>
-      <td>${d.bidang}</td>
-      <td>${d.kegiatan}</td>
-      <td>${d.lokasi}</td>
-      <td>${Number(d.anggaran).toLocaleString("id-ID")}</td>
-      <td class="no-print">
-        <button class="edit" onclick="editUsulan(${i})">Edit</button>
-        <button class="hapus" onclick="hapusUsulan(${i})">Hapus</button>
-      </td>
-    </tr>`;
-  });
-}
+    /**
+     * Mengambil data akumulatif dari Google Sheets (GET)
+     */
+    async function ambilData() {
+        const tbody = document.getElementById("tbody");
+        try {
+            const resp = await fetch(API_URL);
+            const data = await resp.json();
+            
+            // Filter hanya data yang sesuai dengan Kelurahan yang login
+            const dataFilter = data.filter(d => d.kelurahan === kelurahanLogin);
+            
+            tbody.innerHTML = "";
+            if (dataFilter.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada riwayat usulan tersimpan.</td></tr>";
+            } else {
+                dataFilter.forEach((d, i) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${d.bidang || '-'}</td>
+                            <td>${d.kegiatan || '-'}</td>
+                            <td>${d.lokasi || '-'}</td>
+                            <td>${d.anggaran ? Number(d.anggaran).toLocaleString('id-ID') : '0'}</td>
+                        </tr>`;
+                });
+            }
+        } catch (e) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal terhubung ke server cloud.</td></tr>";
+        }
+    }
 
-/* ================= SIMPAN DATA ================= */
-async function simpanUsulan() {
-  if (!bidang.value || !kegiatan.value) return alert("Bidang dan Nama Kegiatan wajib diisi!");
+    /**
+     * Menyimpan usulan baru ke Google Sheets (POST)
+     */
+    async function simpanKeCloud() {
+        const btn = document.getElementById("btnSimpan");
+        const payload = {
+            kelurahan: kelurahanLogin,
+            bidang: document.getElementById("bidang").value,
+            kegiatan: document.getElementById("kegiatan").value,
+            lokasi: document.getElementById("lokasi").value,
+            volume: document.getElementById("volume").value,
+            anggaran: document.getElementById("anggaran").value,
+            keterangan: document.getElementById("keterangan").value
+        };
 
-  const data = {
-    kelurahan: kelurahanLogin,
-    bidang: bidang.value,
-    kegiatan: kegiatan.value,
-    lokasi: lokasi.value,
-    volume: volume.value,
-    anggaran: anggaran.value,
-    keterangan: keterangan.value
-  };
+        if (!payload.bidang || !payload.kegiatan) {
+            alert("Harap isi Bidang dan Nama Kegiatan!");
+            return;
+        }
 
-  const btn = document.getElementById("btnSimpan");
-  btn.disabled = true;
-  btn.innerText = "⌛ Mengirim...";
+        btn.disabled = true;
+        btn.innerText = "⌛ Memproses...";
 
-  try {
-    // Kirim ke Google Sheets
-    await fetch(API_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: JSON.stringify(data)
-    });
+        try {
+            // Pengiriman data menggunakan mode no-cors sesuai spesifikasi Google Apps Script
+            await fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                body: JSON.stringify(payload)
+            });
 
-    alert("Data berhasil tersimpan permanen di Cloud!");
-    
-    // Simpan juga ke Lokal sebagai cadangan
-    const localData = JSON.parse(localStorage.getItem("dataUsulan")) || [];
-    localData.push(data);
-    localStorage.setItem("dataUsulan", JSON.stringify(localData));
+            alert("Usulan berhasil disimpan secara permanen di Cloud!");
+            resetForm();
+            ambilData(); // Refresh tabel secara otomatis untuk menampilkan data kumulatif
+        } catch (e) {
+            alert("Terjadi kesalahan saat menyimpan data.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "💾 Simpan & Kirim ke Cloud";
+        }
+    }
 
-    resetForm();
-    muatDataDariCloud(); // Refresh data langsung dari cloud
-  } catch (e) {
-    alert("Gagal mengirim ke Cloud!");
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "💾 Simpan & Kirim ke Cloud";
-  }
-}
+    function resetForm() {
+        document.getElementById("bidang").value = "";
+        document.getElementById("kegiatan").value = "";
+        document.getElementById("lokasi").value = "";
+        document.getElementById("volume").value = "";
+        document.getElementById("anggaran").value = "";
+        document.getElementById("keterangan").value = "";
+    }
 
-function editUsulan(i) {
-  const d = dataUsulan[i];
-  bidang.value = d.bidang;
-  kegiatan.value = d.kegiatan;
-  lokasi.value = d.lokasi;
-  volume.value = d.volume;
-  anggaran.value = d.anggaran;
-  keterangan.value = d.keterangan;
-  window.scrollTo(0, 0);
-  alert("Silakan perbaiki data. Catatan: Data lama di Cloud tetap ada, data baru akan tersimpan sebagai usulan baru.");
-}
+    function exportExcel() {
+        const table = document.querySelector("table");
+        const html = `<html><head><meta charset="UTF-8"></head><body><h2>Daftar Usulan ${kelurahanLogin}</h2>${table.outerHTML}</body></html>`;
+        const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Usulan_${kelurahanLogin.replace(/\s+/g, '_')}.xls`;
+        a.click();
+    }
 
-function hapusUsulan(i) {
-  if (confirm("Hapus usulan dari tampilan lokal? (Catatan: Data di Google Sheets Admin tetap tersimpan)")) {
-    dataUsulan.splice(i, 1);
-    tampilkan();
-  }
-}
-
-function exportExcel() {
-  let table = document.querySelector("table").cloneNode(true);
-  let rows = table.rows;
-  for (let i = 0; i < rows.length; i++) { rows[i].deleteCell(-1); }
-  let html = `<html><head><meta charset="UTF-8"></head><body><h2>Daftar Usulan ${kelurahanLogin}</h2>${table.outerHTML}</body></html>`;
-  let blob = new Blob([html], { type: "application/vnd.ms-excel" });
-  let a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `Usulan_${kelurahanLogin}.xls`;
-  a.click();
-}
-
-function resetForm() {
-  bidang.value = ""; kegiatan.value = ""; lokasi.value = "";
-  volume.value = ""; anggaran.value = ""; keterangan.value = "";
-}
-
-function kembali() { location.href = "dashboard.html"; }
-
-// JALANKAN SYNC SAAT HALAMAN DIBUKA
-muatDataDariCloud();
+    // Jalankan pengambilan data riwayat saat halaman pertama kali dibuka
+    ambilData();
 </script>
 
 </body>
