@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rekapitulasi Admin</title>
+    <title>Rekapitulasi Admin - Musrenbang Makale</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 10px; word-wrap: break-word; }
         th { background: #2c7be5; color: white; }
         .kop-surat { display: none; text-align: center; }
+
         @media print {
             .no-print { display: none; }
             .kop-surat { display: block; margin-bottom: 20px; }
-            @page { size: landscape; }
-            table { font-size: 9px; }
+            @page { size: landscape; margin: 1cm; }
+            table { width: 100%; }
+            th { background-color: #2c7be5 !important; color: white !important; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="no-print">
-            <h3>Rekapitulasi Usulan Kecamatan</h3>
-            <button onclick="window.print()">🖨️ Cetak PDF (Landscape)</button>
-            <button onclick="location.href='dashboard_admin.html'">Kembali</button>
+            <h3>Rekapitulasi Usulan Seluruh Wilayah</h3>
+            <button onclick="window.print()" style="padding:10px; background:#3498db; color:white; border:none; border-radius:4px; cursor:pointer">🖨️ Cetak PDF (Landscape)</button>
+            <button onclick="location.href='dashboard_admin.html'" style="padding:10px; background:#666; color:white; border:none; border-radius:4px; cursor:pointer">Kembali</button>
             <hr>
         </div>
 
@@ -34,10 +36,16 @@
             <h4>REKAPITULASI USULAN MUSRENBANG TINGKAT KECAMATAN</h4>
         </div>
 
-        <table id="tableRekap">
+        <table>
             <thead>
                 <tr>
-                    <th>Kelurahan/Lembang</th><th>Bidang</th><th>Kegiatan</th><th>Lokasi</th><th>Anggaran</th><th>OPD Tujuan</th>
+                    <th style="width: 12%;">Kelurahan</th>
+                    <th style="width: 10%;">Bidang</th>
+                    <th style="width: 18%;">Kegiatan</th>
+                    <th style="width: 15%;">Lokasi</th>
+                    <th style="width: 12%;">Anggaran</th>
+                    <th style="width: 15%;">OPD Tujuan</th>
+                    <th style="width: 18%;">Keterangan</th>
                 </tr>
             </thead>
             <tbody id="isiTabel"></tbody>
@@ -45,15 +53,20 @@
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbxYWQJk2oEE6O3NaL_gZV771dCzGThihUpWkzQCAsMFiM4fpcbKOAWUgn8cAX4-orp3/exec";
+        const API = "https://script.google.com/macros/s/AKfycbyQTPRqZaFrpsHGUrADSpnjAffkHLBDANxFzC2_Hwi4DOteviK9G77SOq5n6IU-u0CG/exec";
         async function load() {
             const r = await fetch(API + "?t=" + Date.now());
             const data = await r.json();
             let h = "";
             data.forEach(d => {
                 h += `<tr>
-                    <td>${d.kelurahan}</td><td>${d.bidang}</td><td>${d.kegiatan}</td>
-                    <td>${d.lokasi}</td><td>Rp ${Number(d.anggaran).toLocaleString()}</td><td>${d.opd}</td>
+                    <td>${d.kelurahan}</td>
+                    <td>${d.bidang}</td>
+                    <td>${d.kegiatan}</td>
+                    <td>${d.lokasi}</td>
+                    <td>Rp ${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                    <td>${d.opd}</td>
+                    <td>${d.keterangan || "-"}</td>
                 </tr>`;
             });
             document.getElementById("isiTabel").innerHTML = h;

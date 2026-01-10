@@ -1,41 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Input Usulan</title>
+    <meta charset="UTF-8">
+    <title>Input Usulan - Musrenbang Makale</title>
     <style>
         body { font-family: sans-serif; background: #f4f6f9; padding: 20px; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 8px; max-width: 900px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 25px; border-radius: 8px; max-width: 1100px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        button { background: #27ae60; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-wrap: break-word; }
         th { background: #f8f9fa; }
-        .no-print { margin-bottom: 10px; }
         
+        .no-print { margin-bottom: 15px; }
+        .print-header { display: none; text-align: center; }
+
         @media print {
-            .no-print, #fUsulan, button, hr { display: none !important; }
+            .no-print, #fUsulan, hr, h3 { display: none !important; }
             body { background: white; padding: 0; }
             .card { box-shadow: none; border: none; width: 100%; max-width: none; }
-            .print-header { display: block !important; text-align: center; }
+            .print-header { display: block !important; margin-bottom: 20px; }
+            table { font-size: 10px; width: 100%; }
+            th { background-color: #eee !important; color: black !important; }
         }
-        .print-header { display: none; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="no-print">
             <button onclick="location.href='dashboard.html'" style="background:#666">⬅ Kembali</button>
-            <button onclick="window.print()" style="background:#3498db">🖨️ Cetak PDF</button>
+            <button onclick="window.print()" style="background:#3498db">🖨️ Cetak PDF Usulan</button>
         </div>
 
         <div class="print-header">
             <img src="Logo_Tana_Toraja.png" width="60">
-            <h3>DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h3>
-            <h4 id="labelKelPrint"></h4>
+            <h2 style="margin:5px">DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h2>
+            <h3 id="labelKelPrint" style="margin:5px"></h3>
             <hr style="border:1px solid black">
         </div>
 
-        <h3>Wilayah: <span id="namaKel"></span></h3>
+        <h3>Input Usulan: <span id="namaKel"></span></h3>
+        
         <form id="fUsulan">
             <input type="hidden" id="rowId">
             <select id="bidang" required>
@@ -61,14 +66,20 @@
                 <option>Satpolpp</option><option>Sekretariat Daerah</option><option>Sekretariat DPRD</option>
                 <option>RSUD Lakipadada</option>
             </select>
-            <textarea id="keterangan" placeholder="Keterangan tambahan"></textarea>
+            <textarea id="keterangan" placeholder="Keterangan tambahan (Muncul di laporan cetak)"></textarea>
             <button type="submit" id="btnProses">KIRIM USULAN</button>
         </form>
 
         <table>
             <thead>
                 <tr>
-                    <th>Kegiatan</th><th>Lokasi</th><th>Volume</th><th>Anggaran</th><th>OPD</th><th class="no-print">Aksi</th>
+                    <th style="width: 20%;">Kegiatan</th>
+                    <th style="width: 15%;">Lokasi</th>
+                    <th style="width: 10%;">Vol</th>
+                    <th style="width: 15%;">Anggaran</th>
+                    <th style="width: 15%;">OPD</th>
+                    <th style="width: 20%;">Keterangan</th>
+                    <th class="no-print" style="width: 5%;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="isiTabel"></tbody>
@@ -76,9 +87,10 @@
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbxYWQJk2oEE6O3NaL_gZV771dCzGThihUpWkzQCAsMFiM4fpcbKOAWUgn8cAX4-orp3/exec";
+        const API = "https://script.google.com/macros/s/AKfycbyQTPRqZaFrpsHGUrADSpnjAffkHLBDANxFzC2_Hwi4DOteviK9G77SOq5n6IU-u0CG/exec";
         const kel = localStorage.getItem("kelurahan");
         if(!kel) location.href="index.html";
+        
         document.getElementById("namaKel").innerText = kel;
         document.getElementById("labelKelPrint").innerText = "Wilayah: " + kel;
 
@@ -89,9 +101,15 @@
             let h = "";
             filtered.reverse().forEach(d => {
                 h += `<tr>
-                    <td>${d.kegiatan}</td><td>${d.lokasi}</td><td>${d.volume}</td>
-                    <td>${Number(d.anggaran).toLocaleString()}</td><td>${d.opd}</td>
-                    <td class="no-print"><button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px;">✖</button></td>
+                    <td>${d.kegiatan}</td>
+                    <td>${d.lokasi}</td>
+                    <td>${d.volume}</td>
+                    <td>${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                    <td>${d.opd}</td>
+                    <td>${d.keterangan || "-"}</td>
+                    <td class="no-print">
+                        <button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px;">✖</button>
+                    </td>
                 </tr>`;
             });
             document.getElementById("isiTabel").innerHTML = h;
@@ -109,7 +127,7 @@
                 opd: document.getElementById("opd").value, keterangan: document.getElementById("keterangan").value
             };
             await fetch(API, { method: "POST", body: JSON.stringify(payload) });
-            alert("Data Berhasil Terkirim!");
+            alert("Berhasil!");
             document.getElementById("fUsulan").reset();
             btn.disabled = false; btn.innerText = "KIRIM USULAN";
             loadData();
