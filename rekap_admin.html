@@ -2,72 +2,71 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Rekapitulasi Musrenbang Kecamatan</title>
+    <title>Rekapitulasi Musrenbang Kecamatan Makale</title>
     <style>
         body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
-        .header { background: #1a202c; color: white; padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; }
+        .header-nav { background: #1a202c; color: white; padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; }
         .container { padding: 20px; max-width: 1400px; margin: auto; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
-        /* Summary Boxes (Hanya Tampil di Layar) */
+        /* Box Summary (Hanya Layar) */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .summary-box { padding: 20px; border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .summary-box { padding: 20px; border-radius: 8px; color: white; }
         .bg-blue { background: #3182ce; }
         .bg-green { background: #38a169; }
-        .summary-box h4 { margin: 0; font-size: 14px; opacity: 0.9; text-transform: uppercase; }
         .summary-box div { font-size: 26px; font-weight: bold; margin-top: 8px; }
 
-        /* Toolbar & Search */
+        /* Toolbar */
         .toolbar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
-        .filter-group { display: flex; flex-direction: column; gap: 5px; flex-grow: 1; min-width: 200px; }
         .search-group { display: flex; flex-direction: column; gap: 5px; flex-grow: 2; min-width: 300px; }
-        
-        label { font-size: 12px; font-weight: bold; color: #4a5568; }
-        input, select, button { padding: 10px 15px; border-radius: 6px; border: 1px solid #cbd5e0; font-weight: bold; font-size: 13px; }
+        input, select, button { padding: 10px 15px; border-radius: 6px; border: 1px solid #cbd5e0; font-weight: bold; }
         
         .btn-refresh { background: #3182ce; color: white; border: none; cursor: pointer; }
         .btn-excel { background: #38a169; color: white; border: none; cursor: pointer; }
         .btn-pdf { background: #e53e3e; color: white; border: none; cursor: pointer; }
         .btn-back { background: #4a5568; color: white; border: none; cursor: pointer; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* Table */
-        .table-container { overflow-x: auto; background: white; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
-        th, td { border: 1px solid #edf2f7; padding: 12px; text-align: left; font-size: 12px; }
-        th { background: #f7fafc; color: #4a5568; position: sticky; top: 0; z-index: 10; }
-        tr:nth-child(even) { background-color: #f8fafc; }
-        .text-right { text-align: right; font-weight: bold; }
+        /* Tabel */
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #edf2f7; padding: 12px; text-align: left; font-size: 11px; }
+        th { background: #f7fafc; color: #4a5568; text-transform: uppercase; }
 
-        /* ATURAN CETAK (PDF) */
+        /* HEADER & FOOTER KHUSUS CETAK */
+        .print-header { display: none; text-align: center; margin-bottom: 20px; border-bottom: 3px double #000; padding-bottom: 10px; }
+        .print-footer { display: none; text-align: left; font-size: 9px; font-style: italic; margin-top: 15px; color: #555; }
+
+        /* ATURAN CETAK PDF */
         @media print {
-            @page { size: landscape; margin: 0.5cm; }
-            /* Menghilangkan ringkasan anggaran, tombol, dan navigasi saat print */
-            .no-print, .header, .toolbar, .summary-grid, .btn-back { 
-                display: none !important; 
-            }
-            .card { box-shadow: none; border: none; padding: 0; }
+            @page { size: landscape; margin: 1cm; }
+            .no-print, .header-nav, .toolbar, .summary-grid { display: none !important; }
+            .print-header, .print-footer { display: block !important; }
+            .card { border: none; box-shadow: none; padding: 0; }
             table { width: 100%; border: 1px solid #000; }
-            th, td { border: 1px solid #000 !important; padding: 6px; font-size: 10px; color: black !important; }
-            h2 { font-size: 14px; text-align: center; margin-bottom: 20px; }
+            th, td { border: 1px solid #000 !important; padding: 6px; font-size: 9px; color: black !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="header no-print">
+<div class="header-nav no-print">
     <strong>Dashboard Admin - Rekapitulasi Musrenbang Kecamatan</strong>
-    <span id="timestamp" style="font-size: 12px; opacity: 0.8;"></span>
+    <span id="timestamp" style="font-size: 11px;"></span>
 </div>
 
 <div class="container">
-    <div class="summary-grid">
+    
+    <div class="print-header">
+        <h2 style="margin:0; font-size: 18px;">REKAPITULASI USULAN MUSRENBANG KECAMATAN MAKALE</h2>
+        <p style="margin:5px 0; font-size: 12px; font-weight: bold;">Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</p>
+    </div>
+
+    <div class="summary-grid no-print">
         <div class="summary-box bg-blue">
-            <h4>Total Anggaran Seluruh Kecamatan</h4>
+            <h4>Total Anggaran Kecamatan</h4>
             <div id="totalKecamatan">Rp 0</div>
         </div>
         <div class="summary-box bg-green">
-            <h4>Total Terfilter / Hasil Cari</h4>
+            <h4>Total Hasil Filter/Cari</h4>
             <div id="totalFilter">Rp 0</div>
         </div>
     </div>
@@ -75,53 +74,40 @@
     <div class="card no-print">
         <div class="toolbar">
             <div class="search-group">
-                <label>🔍 Cari Kata Kunci (Kegiatan, Lokasi, atau Keterangan)</label>
-                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik untuk mencari usulan...">
+                <label style="font-size:12px; font-weight:bold;">🔍 Pencarian Cepat</label>
+                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari kegiatan, lokasi, atau keterangan...">
             </div>
-            <div class="filter-group">
-                <label>Kelurahan/Lembang</label>
-                <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
-            </div>
-            <div class="filter-group">
-                <label>Bidang Program</label>
-                <select id="filterBid" onchange="filterData()">
-                    <option value="">Semua Bidang</option>
-                    <option>Bidang Sarana dan Prasarana</option>
-                    <option>Bidang Sosial Budaya</option>
-                    <option>Bidang Ekonomi</option>
-                </select>
-            </div>
-        </div>
-        
-        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-            <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Perbarui Data</button>
-            <button class="btn-excel" onclick="exportExcel()">📤 Simpan Excel</button>
-            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak Laporan</button>
-            <button class="btn-back" onclick="window.location.href='index.html'">🏠 Kembali ke Dashboard</button>
+            <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
+            <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Refresh</button>
+            <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Print PDF</button>
+            <button class="btn-back" onclick="window.location.href='index.html'">🏠 Dashboard</button>
         </div>
     </div>
 
     <div class="card">
-        <h2 style="margin-top:0;">📄 Daftar Usulan Musrenbang Terdata</h2>
-        <div class="table-container">
-            <table id="tableAdmin">
-                <thead>
-                    <tr>
-                        <th style="width:30px;">No</th>
-                        <th>Kelurahan</th>
-                        <th>Bidang</th>
-                        <th>Nama Kegiatan</th>
-                        <th>Lokasi</th>
-                        <th>Volume</th>
-                        <th>Anggaran (Rp)</th>
-                        <th>Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                    <tr><td colspan="8" style="text-align:center; padding: 40px;">Menarik data dari server cloud...</td></tr>
-                </tbody>
-            </table>
-        </div>
+        <table id="tableAdmin">
+            <thead>
+                <tr>
+                    <th style="width:20px;">No</th>
+                    <th>Kelurahan</th>
+                    <th>Bidang</th>
+                    <th>Nama Kegiatan</th>
+                    <th>Lokasi</th>
+                    <th>Volume</th>
+                    <th>Anggaran (Rp)</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <tr><td colspan="8" style="text-align:center;">Menghubungkan ke server...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="print-footer">
+        * Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry<br>
+        * Dokumen ini dicetak otomatis pada sistem rekapitulasi pada tanggal: <span id="printDate"></span>
     </div>
 </div>
 
@@ -130,7 +116,6 @@
     let dataCloud = [];
 
     async function muatDataAdmin() {
-        const tbody = document.getElementById("tbody");
         try {
             const resp = await fetch(API_URL + "?t=" + new Date().getTime());
             dataCloud = await resp.json();
@@ -142,71 +127,62 @@
 
             const total = dataCloud.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
             document.getElementById("totalKecamatan").innerText = "Rp " + total.toLocaleString('id-ID');
-            document.getElementById("timestamp").innerText = "Update: " + new Date().toLocaleTimeString();
+            
+            // Set tanggal di footer print
+            document.getElementById("printDate").innerText = new Date().toLocaleString('id-ID');
 
             filterData();
         } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:red;padding:20px;'>Gagal menyinkronkan data.</td></tr>";
+            document.getElementById("tbody").innerHTML = "<tr><td colspan='8' style='color:red;'>Gagal sinkron data cloud server.</td></tr>";
         }
     }
 
     function filterData() {
         const k = document.getElementById("filterKel").value;
-        const b = document.getElementById("filterBid").value;
         const s = document.getElementById("searchInput").value.toLowerCase();
         
         const filtered = dataCloud.filter(d => {
             const matchKel = !k || d.kelurahan === k;
-            const matchBid = !b || d.bidang === b;
             const matchSearch = !s || 
                 (d.kegiatan && d.kegiatan.toLowerCase().includes(s)) || 
-                (d.lokasi && d.lokasi.toLowerCase().includes(s)) || 
+                (d.lokasi && d.lokasi.toLowerCase().includes(s)) ||
                 (d.keterangan && d.keterangan.toLowerCase().includes(s));
-            
-            return matchKel && matchBid && matchSearch;
+            return matchKel && matchSearch;
         });
         
         const totalF = filtered.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
         document.getElementById("totalFilter").innerText = "Rp " + totalF.toLocaleString('id-ID');
         
-        tampilkanTabel(filtered);
-    }
-
-    function tampilkanTabel(data) {
         const tbody = document.getElementById("tbody");
         tbody.innerHTML = "";
-        data.forEach((d, i) => {
+        filtered.forEach((d, i) => {
             tbody.innerHTML += `<tr>
                 <td>${i + 1}</td>
-                <td><strong>${d.kelurahan || '-'}</strong></td>
-                <td>${d.bidang || '-'}</td>
-                <td>${d.kegiatan || '-'}</td>
-                <td>${d.lokasi || '-'}</td>
-                <td>${d.volume || '-'}</td>
-                <td class="text-right">${d.anggaran ? Number(d.anggaran).toLocaleString('id-ID') : '0'}</td>
-                <td>${d.keterangan || '-'}</td>
+                <td><strong>${d.kelurahan}</strong></td>
+                <td>${d.bidang}</td>
+                <td>${d.kegiatan}</td>
+                <td>${d.lokasi}</td>
+                <td>${d.volume}</td>
+                <td style="text-align:right">${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                <td>${d.keterangan}</td>
             </tr>`;
         });
     }
 
     function exportExcel() {
-        const table = document.getElementById("tableAdmin");
-        const kName = document.getElementById("filterKel").value || "Kecamatan";
-        
-        // Export HANYA TABEL tanpa kotak ringkasan anggaran
+        const table = document.getElementById("tableAdmin").outerHTML;
         const html = `
         <html>
         <head><meta charset="UTF-8"></head>
         <body>
-            <h2>DAFTAR USULAN MUSRENBANG - ${kName.toUpperCase()}</h2>
-            ${table.outerHTML}
+            <h3>REKAPITULASI USULAN MUSRENBANG KECAMATAN MAKALE</h3>
+            <p><i>Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</i></p>
+            ${table}
         </body>
         </html>`;
-
-        const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `Rekap_Musrenbang_${kName}.xls`;
+        a.href = URL.createObjectURL(new Blob([html], { type: "application/vnd.ms-excel" }));
+        a.download = "Rekap_Musrenbang_Kec_Makale.xls";
         a.click();
     }
 
