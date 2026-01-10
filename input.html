@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Input Usulan - Musrenbang Makale</title>
     <style>
+        /* ... (CSS Anda tetap sama) ... */
         body { font-family: sans-serif; background: #f4f6f9; padding: 20px; margin: 0; }
         .card { background: white; padding: 25px; border-radius: 8px; max-width: 1100px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -11,7 +12,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; table-layout: fixed; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-wrap: break-word; }
         th { background: #f8f9fa; }
-        
         .no-print { margin-bottom: 15px; }
         .print-header { display: none; text-align: center; }
 
@@ -35,11 +35,11 @@
         <div class="print-header">
             <img src="Logo_Tana_Toraja.png" width="60">
             <h2 style="margin:5px">DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h2>
-            <h3 id="labelKelPrint" style="margin:5px"></h3>
+            <h3 id="labelKelPrint" style="margin:5px; color: black !important;"></h3>
             <hr style="border:1px solid black">
         </div>
 
-        <h3>Input Usulan: <span id="namaKel"></span></h3>
+        <h3>Input Usulan: <span id="namaKel">Memuat...</span></h3>
         
         <form id="fUsulan">
             <input type="hidden" id="rowId">
@@ -88,49 +88,81 @@
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbyQTPRqZaFrpsHGUrADSpnjAffkHLBDANxFzC2_Hwi4DOteviK9G77SOq5n6IU-u0CG/exec";
-        const kel = localStorage.getItem("kelurahan");
-        if(!kel) location.href="index.html";
         
-        document.getElementById("namaKel").innerText = kel;
-        document.getElementById("labelKelPrint").innerText = "Wilayah: " + kel;
+        // Fungsi untuk menginisialisasi nama wilayah
+        function initWilayah() {
+            const kel = localStorage.getItem("kelurahan");
+            if (!kel) {
+                alert("Sesi berakhir, silakan login kembali.");
+                location.href = "index.html";
+                return;
+            }
+
+            // Set ke layar
+            const elNamaKel = document.getElementById("namaKel");
+            if(elNamaKel) elNamaKel.innerText = kel;
+
+            // Set ke header cetak
+            const elLabelPrint = document.getElementById("labelKelPrint");
+            if(elLabelPrint) elLabelPrint.innerText = "Wilayah: " + kel;
+            
+            return kel;
+        }
+
+        const currentKel = initWilayah();
 
         async function loadData() {
-            const r = await fetch(API + "?t=" + Date.now());
-            const data = await r.json();
-            const filtered = data.filter(x => x.kelurahan === kel);
-            let h = "";
-            filtered.reverse().forEach(d => {
-                h += `<tr>
-                    <td>${d.kegiatan}</td>
-                    <td>${d.lokasi}</td>
-                    <td>${d.volume}</td>
-                    <td>${Number(d.anggaran).toLocaleString('id-ID')}</td>
-                    <td>${d.opd}</td>
-                    <td>${d.keterangan || "-"}</td>
-                    <td class="no-print">
-                        <button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px;">✖</button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById("isiTabel").innerHTML = h;
+            try {
+                const r = await fetch(API + "?t=" + Date.now());
+                const data = await r.json();
+                const filtered = data.filter(x => x.kelurahan === currentKel);
+                let h = "";
+                filtered.reverse().forEach(d => {
+                    h += `<tr>
+                        <td>${d.kegiatan}</td>
+                        <td>${d.lokasi}</td>
+                        <td>${d.volume}</td>
+                        <td>${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                        <td>${d.opd}</td>
+                        <td>${d.keterangan || "-"}</td>
+                        <td class="no-print">
+                            <button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px; border-radius:3px; border:none; color:white; cursor:pointer;">✖</button>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById("isiTabel").innerHTML = h || "<tr><td colspan='7' style='text-align:center'>Belum ada data usulan.</td></tr>";
+            } catch (err) {
+                console.error("Gagal memuat data:", err);
+            }
         }
 
         document.getElementById("fUsulan").onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById("btnProses");
             btn.disabled = true; btn.innerText = "Mengirim...";
+            
             const payload = {
                 action: "insert",
-                kelurahan: kel, bidang: document.getElementById("bidang").value,
-                kegiatan: document.getElementById("kegiatan").value, lokasi: document.getElementById("lokasi").value,
-                volume: document.getElementById("volume").value, anggaran: document.getElementById("anggaran").value,
-                opd: document.getElementById("opd").value, keterangan: document.getElementById("keterangan").value
+                kelurahan: currentKel, 
+                bidang: document.getElementById("bidang").value,
+                kegiatan: document.getElementById("kegiatan").value, 
+                lokasi: document.getElementById("lokasi").value,
+                volume: document.getElementById("volume").value, 
+                anggaran: document.getElementById("anggaran").value,
+                opd: document.getElementById("opd").value, 
+                keterangan: document.getElementById("keterangan").value
             };
-            await fetch(API, { method: "POST", body: JSON.stringify(payload) });
-            alert("Berhasil!");
-            document.getElementById("fUsulan").reset();
-            btn.disabled = false; btn.innerText = "KIRIM USULAN";
-            loadData();
+
+            try {
+                await fetch(API, { method: "POST", body: JSON.stringify(payload) });
+                alert("Berhasil!");
+                document.getElementById("fUsulan").reset();
+                loadData();
+            } catch (err) {
+                alert("Gagal mengirim data.");
+            } finally {
+                btn.disabled = false; btn.innerText = "KIRIM USULAN";
+            }
         };
 
         async function hapus(ts) {
@@ -139,6 +171,8 @@
                 loadData();
             }
         }
+
+        // Jalankan saat halaman dibuka
         loadData();
     </script>
 </body>
