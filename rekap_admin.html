@@ -26,11 +26,12 @@
         input, select, button { padding: 10px 15px; border-radius: 6px; border: 1px solid #cbd5e0; font-weight: bold; font-size: 13px; }
         input:focus { border-color: #3182ce; outline: none; box-shadow: 0 0 0 2px rgba(49,130,206,0.2); }
         
+        /* Button Styles */
         .btn-refresh { background: #3182ce; color: white; border: none; cursor: pointer; }
         .btn-excel { background: #38a169; color: white; border: none; cursor: pointer; }
         .btn-pdf { background: #e53e3e; color: white; border: none; cursor: pointer; }
-        .btn-back { background: #718096; color: white; border: none; cursor: pointer; }
-        button:hover { opacity: 0.9; }
+        .btn-back { background: #4a5568; color: white; border: none; cursor: pointer; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
 
         /* Table */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; }
@@ -39,14 +40,14 @@
         th { background: #f7fafc; color: #4a5568; position: sticky; top: 0; z-index: 10; }
         tr:nth-child(even) { background-color: #f8fafc; }
         .text-right { text-align: right; font-weight: bold; }
-        .highlight { background-color: #fff5f5; font-weight: bold; color: #c53030; }
 
         @media print {
             @page { size: landscape; margin: 0.5cm; }
             .no-print { display: none !important; }
-            .summary-box { color: black; border: 1px solid #000; background: none !important; }
-            table { font-size: 10px; }
+            .summary-box { color: black; border: 1px solid #000; background: none !important; box-shadow: none; }
+            table { font-size: 10px; width: 100%; }
             th, td { border: 1px solid #000 !important; padding: 5px; }
+            h2 { text-align: center; }
         }
     </style>
 </head>
@@ -64,7 +65,7 @@
             <div id="totalKecamatan">Rp 0</div>
         </div>
         <div class="summary-box bg-green">
-            <h4>Total Anggaran Hasil Pencarian/Filter</h4>
+            <h4>Total Terfilter / Hasil Cari</h4>
             <div id="totalFilter">Rp 0</div>
         </div>
     </div>
@@ -73,14 +74,14 @@
         <div class="toolbar">
             <div class="search-group">
                 <label>🔍 Cari Kata Kunci (Kegiatan, Lokasi, atau Keterangan)</label>
-                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik untuk mencari usulan...">
+                <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik nama jalan, jembatan, dusun, dll...">
             </div>
             <div class="filter-group">
                 <label>Kelurahan/Lembang</label>
                 <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
             </div>
             <div class="filter-group">
-                <label>Bidang</label>
+                <label>Bidang Program</label>
                 <select id="filterBid" onchange="filterData()">
                     <option value="">Semua Bidang</option>
                     <option>Bidang Sarana dan Prasarana</option>
@@ -89,16 +90,17 @@
                 </select>
             </div>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
+        
+        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
             <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Perbarui Data</button>
             <button class="btn-excel" onclick="exportExcel()">📤 Simpan Excel</button>
             <button class="btn-pdf" onclick="window.print()">🖨️ Cetak Laporan</button>
-            <button class="btn-back" onclick="window.location.href='dashboard_admin.html'">⬅ Kembali</button>
+            <button class="btn-back" onclick="window.location.href='index.html'">🏠 Kembali ke Dashboard</button>
         </div>
     </div>
 
     <div class="card">
-        <h2 style="margin-top:0;">📄 Daftar Usulan Terdata</h2>
+        <h2 style="margin-top:0;">📄 Daftar Usulan Musrenbang Terdata</h2>
         <div class="table-container">
             <table id="tableAdmin">
                 <thead>
@@ -114,7 +116,7 @@
                     </tr>
                 </thead>
                 <tbody id="tbody">
-                    <tr><td colspan="8" style="text-align:center; padding: 40px;">Memuat data usulan...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; padding: 40px;">Menarik data dari server cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -131,18 +133,20 @@
             const resp = await fetch(API_URL + "?t=" + new Date().getTime());
             dataCloud = await resp.json();
             
+            // Isi dropdown Kelurahan otomatis
             const kelList = [...new Set(dataCloud.map(d => d.kelurahan))].filter(k => k).sort();
             const filterKel = document.getElementById("filterKel");
             filterKel.innerHTML = '<option value="">Semua Kelurahan</option>';
             kelList.forEach(k => filterKel.innerHTML += `<option value="${k}">${k}</option>`);
 
+            // Total Keseluruhan
             const total = dataCloud.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
             document.getElementById("totalKecamatan").innerText = "Rp " + total.toLocaleString('id-ID');
-            document.getElementById("timestamp").innerText = "Update: " + new Date().toLocaleString('id-ID');
+            document.getElementById("timestamp").innerText = "Update Terakhir: " + new Date().toLocaleTimeString();
 
             filterData();
         } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:red;'>Gagal sinkron data cloud.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:red;padding:20px;'>Gagal menyinkronkan data. Silakan refresh halaman.</td></tr>";
         }
     }
 
@@ -162,6 +166,7 @@
             return matchKel && matchBid && matchSearch;
         });
         
+        // Update Total Filtered
         const totalF = filtered.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
         document.getElementById("totalFilter").innerText = "Rp " + totalF.toLocaleString('id-ID');
         
@@ -191,11 +196,12 @@
 
     function exportExcel() {
         const table = document.getElementById("tableAdmin");
-        const html = `<html><head><meta charset="UTF-8"></head><body>${table.outerHTML}</body></html>`;
+        const kName = document.getElementById("filterKel").value || "Kecamatan";
+        const html = `<html><head><meta charset="UTF-8"></head><body><h2>REKAPITULASI MUSRENBANG - ${kName}</h2>${table.outerHTML}</body></html>`;
         const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `Rekap_Musrenbang_Kecamatan.xls`;
+        a.download = `Rekap_Musrenbang_${kName}.xls`;
         a.click();
     }
 
