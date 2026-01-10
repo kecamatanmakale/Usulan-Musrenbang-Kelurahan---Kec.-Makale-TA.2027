@@ -2,92 +2,118 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Rekapitulasi Admin - Cloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapitulasi Admin - Musrenbang</title>
     <style>
-        body { font-family: Arial; background: #f4f6f9; margin: 0; }
-        .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
-        .logo { width: 45px; margin-right: 15px; }
-        .container { padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        .no-print { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
-        th { background: #f8f9fa; }
-        select, button { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        button { background: #2c7be5; color: white; cursor: pointer; border: none; }
-        @media print { .no-print, .header { display: none !important; } }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; }
+        .header { display: flex; align-items: center; background: #1a202c; color: white; padding: 15px 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo { width: 40px; margin-right: 15px; }
+        .container { padding: 20px; max-width: 1300px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { margin-top: 0; color: #2d3748; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; }
+        
+        /* Toolbar Filter */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; }
+        .filter-group label { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #4a5568; }
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e0; min-width: 200px; }
+        
+        /* Tombol */
+        .btn-group { margin-left: auto; display: flex; gap: 10px; }
+        button { padding: 10px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-refresh { background: #3182ce; color: white; }
+        .btn-excel { background: #38a169; color: white; }
+        .btn-back { background: #718096; color: white; }
+
+        /* Tabel */
+        .table-container { overflow-x: auto; background: white; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; text-align: left; font-size: 13px; vertical-align: top; }
+        th { background: #f7fafc; color: #4a5568; position: sticky; top: 0; }
+        tr:hover { background-color: #f8fafc; }
+        
+        .badge-bidang { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        .loading { text-align: center; padding: 40px; color: #3182ce; font-weight: bold; }
+        
+        @media print { .no-print { display: none !important; } .card { box-shadow: none; border: 1px solid #eee; } }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="Logo_Tana_Toraja.png" class="logo">
-        <strong>Rekapitulasi Usulan (Data Cloud Google Sheets)</strong>
-    </div>
 
-    <div class="container">
-        <div class="card">
-            <div class="no-print">
-                <select id="filterKel" onchange="tampilkan()"><option value="">Semua Kelurahan</option></select>
-                <select id="filterBidang" onchange="tampilkan()">
+<div class="header">
+    <img src="Logo_Tana_Toraja.png" class="logo">
+    <strong>Dashboard Admin - Musrenbang Kabupaten</strong>
+</div>
+
+<div class="container">
+    <div class="card no-print">
+        <h2>🔍 Filter & Kontrol Data</h2>
+        <div class="toolbar">
+            <div class="filter-group">
+                <label>Filter Kelurahan/Lembang</label>
+                <select id="filterKel" onchange="filterData()">
+                    <option value="">Semua Kelurahan</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filter Bidang</label>
+                <select id="filterBidang" onchange="filterData()">
                     <option value="">Semua Bidang</option>
                     <option>Bidang Sarana dan Prasarana</option>
                     <option>Bidang Sosial Budaya</option>
                     <option>Bidang Ekonomi</option>
                 </select>
-                <button style="background:#28a745" onclick="exportExcel()">📥 Export Excel</button>
-                <button style="background:#dc3545" onclick="window.print()">🖨️ Print PDF</button>
-                <button style="background:#6c757d" onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
             </div>
-
-            <table id="tabelRekap">
-                <thead>
-                    <tr><th>No</th><th>Kelurahan</th><th>Bidang</th><th>Kegiatan</th><th>Lokasi</th><th>Anggaran (Rp)</th></tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
+            <div class="btn-group">
+                <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Sinkronisasi Cloud</button>
+                <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
+                <button class="btn-back" onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
-        let dataCloud = [];
+    <div class="card">
+        <h2 id="judulTabel">📄 Seluruh Usulan Musrenbang</h2>
+        <div class="table-container">
+            <table id="tableRekap">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">No</th>
+                        <th style="width: 150px;">Kelurahan</th>
+                        <th style="width: 150px;">Bidang</th>
+                        <th style="width: 200px;">Nama Kegiatan</th>
+                        <th style="width: 150px;">Lokasi</th>
+                        <th style="width: 120px;">Anggaran (Rp)</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <tr><td colspan="7" class="loading">Menghubungkan ke Cloud Server...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        async function muatData() {
-            const tbody = document.getElementById("tbody");
-            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Memuat data dari Google Sheets...</td></tr>";
-            try {
-                // Tambahkan no-cache agar data selalu fresh
-                const resp = await fetch(API_URL + "?t=" + new Date().getTime());
-                dataCloud = await resp.json();
-                const listKel = [...new Set(dataCloud.map(d => d.kelurahan))];
-                const filterKel = document.getElementById("filterKel");
-                listKel.forEach(k => { if(k) filterKel.innerHTML += `<option>${k}</option>`; });
-                tampilkan();
-            } catch (e) { 
-                tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal memuat data cloud. Pastikan Apps Script sudah di-deploy sebagai 'Anyone'.</td></tr>"; 
-            }
-        }
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyjLcO6HOsA1yPKizXf6IqnqeSTIlgRPRfITkcnWuGIiuQPLzumwsnHq63H2AQSmfPo/exec";
+    let dataCloud = [];
 
-        function tampilkan() {
-            const fKel = document.getElementById("filterKel").value;
-            const fBid = document.getElementById("filterBidang").value;
-            const tbody = document.getElementById("tbody");
-            tbody.innerHTML = "";
-            let no = 1;
-            dataCloud.filter(d => (!fKel || d.kelurahan === fKel) && (!fBid || d.bidang === fBid)).forEach(d => {
-                tbody.innerHTML += `<tr><td>${no++}</td><td>${d.kelurahan}</td><td>${d.bidang}</td><td>${d.kegiatan}</td><td>${d.lokasi}</td><td>${Number(d.anggaran).toLocaleString('id-ID')}</td></tr>`;
-            });
-        }
+    // Cek Akses Admin
+    if (localStorage.getItem("role") !== "admin") {
+        alert("Akses Ditolak!");
+        location.href = "index.html";
+    }
 
-        function exportExcel() {
-            let html = `<html><head><meta charset="UTF-8"></head><body>${document.getElementById("tabelRekap").outerHTML}</body></html>`;
-            let blob = new Blob([html], {type: "application/vnd.ms-excel"});
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "Rekap_Musrenbang_Kecamatan.xls";
-            a.click();
-        }
-        muatData();
-    </script>
-</body>
-</html>
+    /**
+     * Mengambil data kumulatif dari Google Sheets
+     */
+    async function muatDataAdmin() {
+        const tbody = document.getElementById("tbody");
+        tbody.innerHTML = "<tr><td colspan='7' class='loading'>Sedang menarik data dari Cloud...</td></tr>";
+
+        try {
+            const resp = await fetch(API_URL + "?t=" + new Date().getTime());
+            const data = await resp.json();
+
+            if (!data || data.length === 0) {
