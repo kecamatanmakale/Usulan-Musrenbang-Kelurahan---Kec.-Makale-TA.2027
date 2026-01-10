@@ -13,24 +13,34 @@
         h3 { margin-top: 0; color: #2c7be5; border-bottom: 2px solid #eef2f7; padding-bottom: 10px; }
         label { display: block; margin-top: 15px; font-weight: bold; }
         input, select, textarea, button { width: 100%; padding: 12px; margin-top: 8px; box-sizing: border-box; border: 1px solid #dcdfe6; border-radius: 6px; }
-        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        .btn-excel { background: #28a745; width: auto; margin-right: 10px; }
-        .btn-pdf { background: #dc3545; width: auto; }
+        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        button:hover { background: #1a68d1; }
+        .btn-excel { background: #28a745; width: auto; margin-right: 10px; padding: 10px 20px; }
+        .btn-pdf { background: #dc3545; width: auto; padding: 10px 20px; }
         
-        /* Pengaturan Tabel agar kolom keterangan terlihat rapi */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
-        th, td { border: 1px solid #ebeef5; padding: 10px; text-align: left; word-wrap: break-word; font-size: 13px; }
-        th { background: #f8f9fa; }
+        /* Pengaturan Tabel */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; font-size: 13px; vertical-align: top; }
+        th { background: #f8f9fa; color: #495057; }
         
-        /* Lebar Kolom */
-        .col-no { width: 35px; }
-        .col-bid { width: 120px; }
-        .col-keg { width: 200px; }
-        .col-lok { width: 120px; }
-        .col-ang { width: 110px; }
-        .col-ket { width: 180px; }
+        /* Lebar Kolom Spesifik agar tidak berantakan saat Print */
+        .col-no { width: 5%; }
+        .col-bid { width: 15%; }
+        .col-keg { width: 25%; }
+        .col-lok { width: 15%; }
+        .col-ang { width: 15%; }
+        .col-ket { width: 25%; }
 
-        @media print { .no-print, .header, button { display: none !important; } }
+        /* CSS KHUSUS PRINT */
+        @media print { 
+            @page { size: landscape; margin: 1cm; }
+            .no-print, .header, button { display: none !important; } 
+            .card { border: none; box-shadow: none; padding: 0; }
+            table { width: 100%; border: 1px solid #000; }
+            th, td { border: 1px solid #000; padding: 8px; font-size: 11px; }
+            body { background: white; }
+        }
     </style>
 </head>
 <body>
@@ -61,15 +71,16 @@
         <input id="lokasi" placeholder="RT/RW atau Dusun">
 
         <label>Volume</label>
-        <input id="volume" placeholder="Contoh: 100 Meter, 1 unit, 1 kelompok, 2 paket, dll">
+        <input id="volume" placeholder="Contoh: 100 Meter">
 
         <label>Anggaran (Rp)</label>
         <input id="anggaran" type="number" placeholder="Contoh: 50000000">
 
         <label>Keterangan</label>
-        <textarea id="keterangan" placeholder="Isi keterangan di sini agar muncul di tabel..."></textarea>
+        <textarea id="keterangan" placeholder="Berikan keterangan tambahan jika ada..."></textarea>
 
         <button id="btnSimpan" onclick="simpanData()">💾 Simpan & Kirim ke Cloud</button>
+        <button onclick="location.href='dashboard.html'" style="background: #6c757d;">⬅ Kembali ke Dashboard</button>
     </div>
 
     <div class="card">
@@ -79,8 +90,8 @@
             <button class="btn-pdf" onclick="window.print()">🖨️ Cetak PDF</button>
         </div>
         
-        <div style="overflow-x: auto;">
-            <table>
+        <div class="table-container">
+            <table id="tableMain">
                 <thead>
                     <tr>
                         <th class="col-no">No</th>
@@ -88,10 +99,11 @@
                         <th class="col-keg">Kegiatan</th>
                         <th class="col-lok">Lokasi</th>
                         <th class="col-ang">Anggaran (Rp)</th>
-                        <th class="col-ket">Keterangan</th> </tr>
+                        <th class="col-ket">Keterangan</th>
+                    </tr>
                 </thead>
                 <tbody id="tbody">
-                    <tr><td colspan="6" style="text-align:center;">Memuat data...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;">Menghubungkan ke Cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -113,13 +125,17 @@
             const dataFilter = data.filter(d => d.kelurahan === kelurahanLogin);
             renderTabel(dataFilter);
         } catch (e) {
-            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center;color:red;'>Gagal sinkronisasi.</td></tr>";
+            document.getElementById("tbody").innerHTML = "<tr><td colspan='6' style='text-align:center;color:red;'>Gagal sinkronisasi data.</td></tr>";
         }
     }
 
     function renderTabel(data) {
         const tbody = document.getElementById("tbody");
         tbody.innerHTML = "";
+        if (data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Belum ada data riwayat.</td></tr>";
+            return;
+        }
         data.forEach((item, index) => {
             tbody.innerHTML += `
                 <tr>
@@ -128,7 +144,8 @@
                     <td>${item.kegiatan || '-'}</td>
                     <td>${item.lokasi || '-'}</td>
                     <td>${item.anggaran ? Number(item.anggaran).toLocaleString('id-ID') : '0'}</td>
-                    <td>${item.keterangan || '-'}</td> </tr>`;
+                    <td>${item.keterangan || '-'}</td>
+                </tr>`;
         });
     }
 
@@ -147,15 +164,15 @@
         if (!payload.bidang || !payload.kegiatan) return alert("Bidang dan Kegiatan wajib diisi!");
 
         btn.disabled = true;
-        btn.innerText = "⌛ Mengirim...";
+        btn.innerText = "⌛ Memproses...";
 
         try {
             await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("Berhasil!");
+            alert("Berhasil disimpan!");
             resetForm();
             muatData();
         } catch (e) {
-            alert("Gagal!");
+            alert("Gagal mengirim data.");
         } finally {
             btn.disabled = false;
             btn.innerText = "💾 Simpan & Kirim ke Cloud";
@@ -163,18 +180,32 @@
     }
 
     function resetForm() {
-        document.querySelectorAll("input, textarea, select").forEach(el => {
-            if(el.id !== "kelurahan") el.value = "";
-        });
+        document.getElementById("bidang").value = "";
+        document.getElementById("kegiatan").value = "";
+        document.getElementById("lokasi").value = "";
+        document.getElementById("volume").value = "";
+        document.getElementById("anggaran").value = "";
+        document.getElementById("keterangan").value = "";
     }
 
+    /**
+     * PERBAIKAN EXPORT EXCEL: Mengambil seluruh konten tabel ID tableMain
+     */
     function exportExcel() {
-        const table = document.querySelector("table");
-        const html = `<html><head><meta charset="UTF-8"></head><body>${table.outerHTML}</body></html>`;
+        const table = document.getElementById("tableMain");
+        const html = `
+            <html>
+            <head><meta charset="UTF-8"></head>
+            <body>
+                <h3>DAFTAR USULAN MUSRENBANG - ${kelurahanLogin}</h3>
+                <table border="1">${table.innerHTML}</table>
+            </body>
+            </html>`;
+        
         const blob = new Blob([html], { type: "application/vnd.ms-excel" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `Usulan_${kelurahanLogin}.xls`;
+        a.download = `Rekap_Usulan_${kelurahanLogin}.xls`;
         a.click();
     }
 
