@@ -49,15 +49,14 @@
 <body>
 
 <div class="header-nav no-print">
-    <strong>Dashboard Admin - Rekapitulasi Musrenbang Kecamatan</strong>
+    <strong>Dashboard Admin - Musrenbang Kecamatan</strong>
     <span id="timestamp" style="font-size: 11px;"></span>
 </div>
 
 <div class="container">
     
     <div class="print-header">
-        <h2 style="margin:0; font-size: 18px;">REKAPITULASI USULAN MUSRENBANG KECAMATAN MAKALE</h2>
-        <p style="margin:5px 0; font-size: 12px; font-weight: bold;">Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</p>
+        <h2 style="margin:0; font-size: 16px;">Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</h2>
     </div>
 
     <div class="summary-grid no-print">
@@ -80,7 +79,7 @@
             <select id="filterKel" onchange="filterData()"><option value="">Semua Kelurahan</option></select>
             <button class="btn-refresh" onclick="muatDataAdmin()">🔄 Refresh</button>
             <button class="btn-excel" onclick="exportExcel()">📤 Export Excel</button>
-            <button class="btn-pdf" onclick="window.print()">🖨️ Print PDF</button>
+            <button class="btn-pdf" onclick="window.print()">🖨️ Cetak PDF</button>
             <button class="btn-back" onclick="window.location.href='index.html'">🏠 Dashboard</button>
         </div>
     </div>
@@ -128,7 +127,6 @@
             const total = dataCloud.reduce((sum, item) => sum + (Number(item.anggaran) || 0), 0);
             document.getElementById("totalKecamatan").innerText = "Rp " + total.toLocaleString('id-ID');
             
-            // Set tanggal di footer print
             document.getElementById("printDate").innerText = new Date().toLocaleString('id-ID');
 
             filterData();
@@ -175,8 +173,7 @@
         <html>
         <head><meta charset="UTF-8"></head>
         <body>
-            <h3>REKAPITULASI USULAN MUSRENBANG KECAMATAN MAKALE</h3>
-            <p><i>Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</i></p>
+            <h3>Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale Kab. Tana Toraja - Dikembangkan oleh : Fuad Amry</h3>
             ${table}
         </body>
         </html>`;
