@@ -2,38 +2,121 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Login Aplikasi Musrenbang</title>
 
 <style>
-body { font-family: Arial; background: #2c7be5; }
+/* ===== GLOBAL ===== */
+body {
+  font-family: Arial, sans-serif;
+  background: #2c7be5;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ===== BOX LOGIN ===== */
 .login-box {
   width: 360px;
-  margin: 100px auto;
+  max-width: 92%;
+  margin: 80px auto;
   background: #fff;
   padding: 25px;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
+
+/* ===== LOGO ===== */
 .logo {
   width: 120px;
   display: block;
   margin: 0 auto 15px;
 }
-h2 { text-align: center; }
+
+/* ===== JUDUL ===== */
+h2 {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* ===== INPUT & BUTTON ===== */
 input, button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
+  font-size: 15px;
+  border-radius: 5px;
 }
+
+input {
+  border: 1px solid #ccc;
+}
+
 button {
   background: #2c7be5;
   color: #fff;
   border: none;
   cursor: pointer;
+  font-size: 16px;
 }
+
+button:hover {
+  background: #1f5fc4;
+}
+
+/* ===== INFO ===== */
+.info-app {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #444;
+  text-align: center;
+}
+
+.developer {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+}
+
+/* ===== ERROR ===== */
 .error {
   color: red;
   text-align: center;
   margin-top: 10px;
+}
+
+/* ===== RESPONSIVE HP ===== */
+@media (max-width: 480px) {
+
+  .login-box {
+    margin: 40px auto;
+    padding: 20px;
+  }
+
+  .logo {
+    width: 90px;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  input, button {
+    font-size: 15px;
+    padding: 13px;
+  }
+
+  .info-app {
+    font-size: 12px;
+  }
+
+  .developer {
+    font-size: 11px;
+  }
 }
 </style>
 </head>
@@ -44,25 +127,40 @@ button {
 
   <img src="Logo_Tana_Toraja.png" class="logo">
 
-  <h2>Login Aplikasi Musrenbang</h2>
+  <h2>
+    Login Aplikasi Input Usulan<br>
+    Musrenbang Kelurahan T.A 2027
+  </h2>
 
   <input id="username" placeholder="Username">
   <input id="password" type="password" placeholder="Password">
 
   <button onclick="login()">Login</button>
 
+  <p class="info-app">
+    Aplikasi ini dibuat khusus untuk Kecamatan Makale Kabupaten Tana Toraja
+  </p>
+
+  <p class="developer">
+    © <span id="year"></span> Kecamatan Makale – Fuad Amry
+  </p>
+
   <div id="error" class="error"></div>
 
 </div>
 
 <script>
+/* Tahun otomatis */
+document.getElementById("year").innerText = new Date().getFullYear();
+
+/* ===== LOGIN ===== */
 function login(){
   const u = document.getElementById("username").value.trim().toLowerCase();
   const p = document.getElementById("password").value.trim();
   const error = document.getElementById("error");
   error.innerText = "";
 
-  /* ===== ADMIN ===== */
+  /* ADMIN */
   if(u === "admin" && p === "admin123"){
     localStorage.setItem("role","admin");
     localStorage.setItem("kelurahan","ADMIN KECAMATAN");
@@ -70,7 +168,7 @@ function login(){
     return;
   }
 
-  /* ===== OPERATOR KELURAHAN ===== */
+  /* OPERATOR */
   const operators = {
     ariang: { pass:"ariang2027", kel:"Kelurahan Ariang" },
     batupapan: { pass:"batupapan2027", kel:"Kelurahan Batupapan" },
@@ -102,4 +200,3 @@ function login(){
 
 </body>
 </html>
-
