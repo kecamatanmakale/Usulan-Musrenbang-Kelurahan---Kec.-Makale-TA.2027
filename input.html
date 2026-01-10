@@ -3,27 +3,50 @@
 <head>
     <title>Input Usulan</title>
     <style>
-        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; margin: 0; }
+        .card { background: white; padding: 25px; border-radius: 8px; max-width: 900px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f8f9fa; }
+        .no-print { margin-bottom: 10px; }
+        
+        @media print {
+            .no-print, #fUsulan, button, hr { display: none !important; }
+            body { background: white; padding: 0; }
+            .card { box-shadow: none; border: none; width: 100%; max-width: none; }
+            .print-header { display: block !important; text-align: center; }
+        }
+        .print-header { display: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <button onclick="location.href='dashboard.html'" style="width:auto; background:#666;">⬅ Kembali</button>
-        <h3>Input Usulan: <span id="namaKel"></span></h3>
+        <div class="no-print">
+            <button onclick="location.href='dashboard.html'" style="background:#666">⬅ Kembali</button>
+            <button onclick="window.print()" style="background:#3498db">🖨️ Cetak PDF</button>
+        </div>
+
+        <div class="print-header">
+            <img src="Logo_Tana_Toraja.png" width="60">
+            <h3>DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h3>
+            <h4 id="labelKelPrint"></h4>
+            <hr style="border:1px solid black">
+        </div>
+
+        <h3>Wilayah: <span id="namaKel"></span></h3>
         <form id="fUsulan">
             <input type="hidden" id="rowId">
             <select id="bidang" required>
                 <option value="">-- Pilih Bidang --</option>
-                <option>Bidang Sarana dan Prasarana</option><option>Bidang Sosial Budaya</option><option>Bidang Ekonomi</option>
+                <option>Bidang Sarana dan Prasarana</option>
+                <option>Bidang Sosial Budaya</option>
+                <option>Bidang Ekonomi</option>
             </select>
             <input type="text" id="kegiatan" placeholder="Nama Kegiatan" required>
             <input type="text" id="lokasi" placeholder="Lokasi Spesifik" required>
-            <input type="text" id="volume" placeholder="Volume (Contoh: 200m / 1 Unit)" required>
+            <input type="text" id="volume" placeholder="Volume (Contoh: 100m / 2 Unit)" required>
             <input type="number" id="anggaran" placeholder="Anggaran (Rp)" required>
             <select id="opd" required>
                 <option value="">-- Pilih OPD Tujuan --</option>
@@ -39,48 +62,66 @@
                 <option>RSUD Lakipadada</option>
             </select>
             <textarea id="keterangan" placeholder="Keterangan tambahan"></textarea>
-            <button type="submit" id="btn">KIRIM USULAN</button>
+            <button type="submit" id="btnProses">KIRIM USULAN</button>
         </form>
-        <hr>
-        <h4>Riwayat Usulan Wilayah Anda:</h4>
+
         <table>
-            <thead><tr><th>Kegiatan</th><th>OPD</th><th>Aksi</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Kegiatan</th><th>Lokasi</th><th>Volume</th><th>Anggaran</th><th>OPD</th><th class="no-print">Aksi</th>
+                </tr>
+            </thead>
             <tbody id="isiTabel"></tbody>
         </table>
     </div>
+
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbyQTPRqZaFrpsHGUrADSpnjAffkHLBDANxFzC2_Hwi4DOteviK9G77SOq5n6IU-u0CG/exec";
+        const API = "https://script.google.com/macros/s/AKfycbxYWQJk2oEE6O3NaL_gZV771dCzGThihUpWkzQCAsMFiM4fpcbKOAWUgn8cAX4-orp3/exec";
         const kel = localStorage.getItem("kelurahan");
         if(!kel) location.href="index.html";
         document.getElementById("namaKel").innerText = kel;
+        document.getElementById("labelKelPrint").innerText = "Wilayah: " + kel;
 
-        async function load() {
+        async function loadData() {
             const r = await fetch(API + "?t=" + Date.now());
-            const db = await r.json();
-            const filtered = db.filter(x => x.kelurahan === kel);
+            const data = await r.json();
+            const filtered = data.filter(x => x.kelurahan === kel);
             let h = "";
             filtered.reverse().forEach(d => {
-                h += `<tr><td>${d.kegiatan}</td><td>${d.opd}</td>
-                <td><button onclick="del('${d.timestamp}')" style="background:#e74c3c; padding:5px;">✖</button></td></tr>`;
+                h += `<tr>
+                    <td>${d.kegiatan}</td><td>${d.lokasi}</td><td>${d.volume}</td>
+                    <td>${Number(d.anggaran).toLocaleString()}</td><td>${d.opd}</td>
+                    <td class="no-print"><button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px;">✖</button></td>
+                </tr>`;
             });
             document.getElementById("isiTabel").innerHTML = h;
         }
 
         document.getElementById("fUsulan").onsubmit = async (e) => {
             e.preventDefault();
-            const data = {
+            const btn = document.getElementById("btnProses");
+            btn.disabled = true; btn.innerText = "Mengirim...";
+            const payload = {
                 action: "insert",
                 kelurahan: kel, bidang: document.getElementById("bidang").value,
                 kegiatan: document.getElementById("kegiatan").value, lokasi: document.getElementById("lokasi").value,
                 volume: document.getElementById("volume").value, anggaran: document.getElementById("anggaran").value,
                 opd: document.getElementById("opd").value, keterangan: document.getElementById("keterangan").value
             };
-            await fetch(API, { method: "POST", body: JSON.stringify(data) });
-            alert("Berhasil!");
+            await fetch(API, { method: "POST", body: JSON.stringify(payload) });
+            alert("Data Berhasil Terkirim!");
             document.getElementById("fUsulan").reset();
-            load();
+            btn.disabled = false; btn.innerText = "KIRIM USULAN";
+            loadData();
         };
-        load();
+
+        async function hapus(ts) {
+            if(confirm("Hapus usulan ini?")) {
+                await fetch(API, { method: "POST", body: JSON.stringify({action:"delete", rowId: ts}) });
+                loadData();
+            }
+        }
+        loadData();
     </script>
 </body>
 </html>

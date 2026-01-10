@@ -2,18 +2,19 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Musrenbang</title>
+    <title>Login Musrenbang Makale</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #2c7be5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .box { background: white; padding: 30px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         select, input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
         button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .logo { width: 80px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <img src="Logo_Tana_Toraja.png" width="80" alt="Logo">
-        <h3>Musrenbang Makale</h3>
+        <img src="Logo_Tana_Toraja.png" class="logo">
+        <h2>Musrenbang Makale</h2>
         <select id="user">
             <option value="">-- Pilih Wilayah --</option>
             <option value="admin">ADMIN KECAMATAN</option>
@@ -38,7 +39,7 @@
                 localStorage.setItem("role", "operator");
                 localStorage.setItem("kelurahan", u);
                 location.href = "dashboard.html";
-            } else { alert("Password atau Wilayah Salah!"); }
+            } else { alert("Login Gagal!"); }
         }
     </script>
 </body>
