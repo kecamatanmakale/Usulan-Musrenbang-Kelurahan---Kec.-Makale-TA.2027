@@ -5,107 +5,161 @@
     <title>Input Usulan Musrenbang Makale</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #edf2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 650px; }
-        h2 { margin-top: 0; color: #2d3748; border-bottom: 3px solid #3182ce; padding-bottom: 10px; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #edf2f7; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* Header */
+        .header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #3182ce; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { margin: 0; color: #2d3748; font-size: 18px; }
+        
+        /* Form Styling */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #4a5568; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn-submit { background: #3182ce; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-submit:hover { background: #2b6cb0; }
-        .loading { display: none; text-align: center; color: #3182ce; font-weight: bold; margin-top: 10px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #4a5568; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-submit { background: #3182ce; color: white; border: none; padding: 12px; flex: 2; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-cancel { background: #a0aec0; color: white; border: none; padding: 12px; flex: 1; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-logout { background: #e53e3e; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 13px; }
+        .btn-excel { background: #38a169; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-pdf { background: #718096; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        /* Table Action Buttons */
+        .btn-edit { background: #ecc94b; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-del { background: #f56565; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        /* Tabel Riwayat */
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+        th { background: #f7fafc; color: #4a5568; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .card { box-shadow: none; border: 1px solid #eee; }
+        }
     </style>
 </head>
 <body>
 
-<div class="form-card">
-    <h2>📝 Input Usulan Musrenbang</h2>
-    <form id="usulanForm">
-        <div class="form-group">
-            <label>Kelurahan / Lembang</label>
-            <select id="kelurahan" required>
-                <option value="">-- Pilih Kelurahan/Lembang --</option>
-                <option>Kelurahan Ariang</option><option>Kelurahan Batupapan</option>
-                <option>Kelurahan Bombongan</option><option>Kelurahan Botang</option>
-                <option>Kelurahan Buntu Burake</option><option>Kelurahan Kamali Pentalluan</option>
-                <option>Kelurahan Lamunan</option><option>Kelurahan Lapandan</option>
-                <option>Lembang Lea</option><option>Kelurahan Manggau</option>
-                <option>Kelurahan Pantan</option><option>Kelurahan Rante</option>
-                <option>Kelurahan Tampo Makale</option><option>Kelurahan Tarongko</option>
-                <option>Kelurahan Tondon Mamullu</option>
-            </select>
-        </div>
+<div class="container">
+    <div class="header-flex no-print">
+        <h2>Aplikasi Input usulan Musrenbang Kelurahan Kec. Makale - Fuad Amry</h2>
+        <a href="index.html" class="btn-logout">Logout / Kembali</a>
+    </div>
 
-        <div class="form-group">
-            <label>Bidang Program</label>
-            <select id="bidang" required>
-                <option value="">-- Pilih Bidang --</option>
-                <option>Bidang Sarana dan Prasarana</option>
-                <option>Bidang Sosial Budaya</option>
-                <option>Bidang Ekonomi</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Nama Kegiatan</label>
-            <input type="text" id="kegiatan" placeholder="Contoh: Pengaspalan Jalan Lingkungan" required>
-        </div>
-
-        <div class="form-group">
-            <label>Lokasi Spesifik</label>
-            <input type="text" id="lokasi" placeholder="Contoh: Lingkungan RT 02 Dusun X" required>
-        </div>
-
-        <div style="display: flex; gap: 15px;">
-            <div class="form-group" style="flex: 1;">
-                <label>Volume / Satuan</label>
-                <input type="text" id="volume" placeholder="Contoh: 500 Meter" required>
+    <div class="card no-print">
+        <form id="usulanForm">
+            <input type="hidden" id="editRowId">
+            
+            <div class="form-group">
+                <label>Wilayah Kelurahan / Lembang</label>
+                <select id="kelurahan" required onchange="muatRiwayat()">
+                    <option value="">-- Pilih Wilayah --</option>
+                    <option>Kelurahan Ariang</option><option>Kelurahan Batupapan</option>
+                    <option>Kelurahan Bombongan</option><option>Kelurahan Botang</option>
+                    <option>Kelurahan Buntu Burake</option><option>Kelurahan Kamali Pentalluan</option>
+                    <option>Kelurahan Lamunan</option><option>Kelurahan Lapandan</option>
+                    <option>Lembang Lea</option><option>Kelurahan Manggau</option>
+                    <option>Kelurahan Pantan</option><option>Kelurahan Rante</option>
+                    <option>Kelurahan Tampo Makale</option><option>Kelurahan Tarongko</option>
+                    <option>Kelurahan Tondon Mamullu</option>
+                </select>
             </div>
-            <div class="form-group" style="flex: 1;">
-                <label>Pagu Anggaran (Rp)</label>
-                <input type="number" id="anggaran" placeholder="Hanya angka" required>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Bidang</label>
+                    <select id="bidang" required>
+                        <option value="">-- Pilih Bidang --</option>
+                        <option>Bidang Sarana dan Prasarana</option>
+                        <option>Bidang Sosial Budaya</option>
+                        <option>Bidang Ekonomi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>OPD Tujuan</label>
+                    <select id="opd" required>
+                        <option value="">-- Pilih OPD --</option>
+                        <option>Diskominfo dan Persandian</option><option>DPUTR</option><option>DPRKP</option>
+                        <option>Dinas Kesehatan</option><option>Pendidikan dan Kebudayaan</option><option>Disparpora</option>
+                        <option>Dinas Sosial</option><option>Disdukcapil</option><option>Diskop UKM Perindag</option>
+                        <option>DLHD</option><option>DPML</option><option>DPMPTSP</option><option>Dinas Perhubungan</option>
+                        <option>DP3A dan KB</option><option>Dinas Perpustakaan dan Arsip Daerah</option>
+                        <option>Pertanian, Ketahanan Pangan dan Perikanan</option><option>Disnakertrans</option>
+                        <option>Bappelitbangda</option><option>BPKPD</option><option>BKPSDM</option>
+                        <option>Kesbangpol</option><option>BPBD</option><option>Inspektorat Daerah</option>
+                        <option>Satpolpp</option><option>Sekretariat Daerah</option><option>Sekretariat DPRD</option>
+                        <option>RSUD Lakipadada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group"><label>Nama Kegiatan</label><input type="text" id="kegiatan" required></div>
+            <div class="form-group"><label>Lokasi Spesifik</label><input type="text" id="lokasi" required></div>
+
+            <div class="form-grid">
+                <div class="form-group"><label>Volume</label><input type="text" id="volume" required></div>
+                <div class="form-group"><label>Anggaran (Rp)</label><input type="number" id="anggaran" required></div>
+            </div>
+
+            <div class="form-group"><label>Keterangan Tambahan</label><textarea id="keterangan" rows="2"></textarea></div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-submit" id="btnSubmit">Kirim Usulan</button>
+                <button type="button" onclick="resetForm()" class="btn-cancel">Batal / Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin:0; font-size:16px;">📋 Riwayat Usulan Terinput</h3>
+            <div class="no-print" style="display: flex; gap: 8px;">
+                <button class="btn-excel" onclick="exportExcel()">Export Excel</button>
+                <button class="btn-pdf" onclick="window.print()">Cetak PDF</button>
             </div>
         </div>
-
-        <div class="form-group">
-            <label>OPD Tujuan (Pelaksana)</label>
-            <select id="opd" required>
-                <option value="">-- Pilih OPD --</option>
-                <option>Diskominfo dan Persandian</option><option>DPUTR</option><option>DPRKP</option>
-                <option>Dinas Kesehatan</option><option>Pendidikan dan Kebudayaan</option><option>Disparpora</option>
-                <option>Dinas Sosial</option><option>Disdukcapil</option><option>Diskop UKM Perindag</option>
-                <option>DLHD</option><option>DPML</option><option>DPMPTSP</option><option>Dinas Perhubungan</option>
-                <option>DP3A dan KB</option><option>Perpustakaan dan Arsip Daerah</option>
-                <option>Pertanian, Ketahanan Pangan dan Perikanan</option><option>Disnakertrans</option>
-                <option>Bappelitbangda</option><option>BPKPD</option><option>BKPSDM</option>
-                <option>Kesbangpol</option><option>BPBD</option><option>Inspektorat Daerah</option>
-                <option>Satpolpp</option><option>Sekretariat Daerah</option><option>Sekretariat DPRD</option>
-                <option>RSUD Lakipadada</option>
-            </select>
+        
+        <div class="table-container">
+            <table id="riwayatTable">
+                <thead>
+                    <tr>
+                        <th>Kegiatan</th>
+                        <th>Lokasi</th>
+                        <th>Anggaran</th>
+                        <th>OPD</th>
+                        <th class="no-print">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="riwayatBody">
+                    <tr><td colspan="5" style="text-align:center; color:#999;">Pilih kelurahan untuk menampilkan data wilayah Anda...</td></tr>
+                </tbody>
+            </table>
         </div>
-
-        <div class="form-group">
-            <label>Keterangan</label>
-            <textarea id="keterangan" rows="2" placeholder="Keterangan tambahan..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submitBtn">Kirim Usulan</button>
-        <div id="loadingStatus" class="loading">Memproses data...</div>
-    </form>
+    </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx3PQul-FYo7glI2xNRUnT52RRLWcOW6U0z7ZVVyN3yXc3jVTKuJybp6P3SZk5fyuzR/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzUuACPc11kpFUM9VnP-QFIzid60PgodfKBItW8rygMlkI001ymlJBUzl4p5kfkagAw/exec";
+    let dataCache = [];
 
+    // Kirim Data (Insert atau Update)
     document.getElementById("usulanForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-        const btn = document.getElementById("submitBtn");
-        const loader = document.getElementById("loadingStatus");
+        const btn = document.getElementById("btnSubmit");
+        const editId = document.getElementById("editRowId").value;
         
-        btn.style.display = "none";
-        loader.style.display = "block";
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
 
-        const data = {
+        const payload = {
+            action: editId ? "update" : "insert",
+            rowId: editId,
             kelurahan: document.getElementById("kelurahan").value,
             bidang: document.getElementById("bidang").value,
             kegiatan: document.getElementById("kegiatan").value,
@@ -117,20 +171,80 @@
         };
 
         try {
-            await fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(data)
-            });
-            alert("✅ Sukses! Usulan berhasil terkirim.");
-            document.getElementById("usulanForm").reset();
-        } catch (error) {
-            alert("❌ Error: Gagal mengirim data.");
-        } finally {
-            btn.style.display = "block";
-            loader.style.display = "none";
-        }
+            await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+            alert("✅ Berhasil menyimpan data!");
+            resetForm();
+            muatRiwayat();
+        } catch (err) { alert("❌ Gagal menyimpan."); }
+        finally { btn.disabled = false; btn.innerText = "Kirim Usulan"; }
     });
+
+    // Muat Riwayat
+    async function muatRiwayat() {
+        const kel = document.getElementById("kelurahan").value;
+        const tbody = document.getElementById("riwayatBody");
+        if (!kel) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Pilih wilayah...</td></tr>'; return; }
+
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Mengambil data wilayah...</td></tr>';
+
+        try {
+            const r = await fetch(API_URL + "?t=" + Date.now());
+            dataCache = await r.json();
+            const filtered = dataCache.filter(x => x.kelurahan === kel);
+
+            let html = "";
+            filtered.reverse().forEach(x => {
+                html += `<tr>
+                    <td><strong>${x.kegiatan}</strong></td>
+                    <td>${x.lokasi}</td>
+                    <td>Rp ${Number(x.anggaran).toLocaleString('id-ID')}</td>
+                    <td>${x.opd}</td>
+                    <td class="no-print">
+                        <button class="btn-edit" onclick="isiFormEdit('${x.timestamp}')">✎</button>
+                        <button class="btn-del" onclick="hapusData('${x.timestamp}')">✖</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;">Belum ada data.</td></tr>';
+        } catch (e) { tbody.innerHTML = '<tr><td colspan="5">Gagal muat.</td></tr>'; }
+    }
+
+    function isiFormEdit(ts) {
+        const item = dataCache.find(x => x.timestamp == ts);
+        if (item) {
+            document.getElementById("editRowId").value = ts;
+            document.getElementById("bidang").value = item.bidang;
+            document.getElementById("kegiatan").value = item.kegiatan;
+            document.getElementById("lokasi").value = item.lokasi;
+            document.getElementById("volume").value = item.volume;
+            document.getElementById("anggaran").value = item.anggaran;
+            document.getElementById("opd").value = item.opd;
+            document.getElementById("keterangan").value = item.keterangan;
+            document.getElementById("btnSubmit").innerText = "Update Perubahan";
+            window.scrollTo(0,0);
+        }
+    }
+
+    async function hapusData(ts) {
+        if (!confirm("Hapus usulan ini secara permanen?")) return;
+        await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "delete", rowId: ts }) });
+        alert("Data dihapus!");
+        muatRiwayat();
+    }
+
+    function resetForm() {
+        document.getElementById("usulanForm").reset();
+        document.getElementById("editRowId").value = "";
+        document.getElementById("btnSubmit").innerText = "Kirim Usulan";
+    }
+
+    function exportExcel() {
+        const table = document.getElementById("riwayatTable").outerHTML;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([table], {type:"application/vnd.ms-excel"}));
+        a.download = "Riwayat_Usulan_Makale.xls";
+        a.click();
+    }
 </script>
 </body>
 </html>
