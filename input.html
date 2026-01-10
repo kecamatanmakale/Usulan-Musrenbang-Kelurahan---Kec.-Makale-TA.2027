@@ -21,7 +21,6 @@ button.secondary { background: #6c757d; }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
 th { background: #f8f9fa; }
-/* Sembunyikan tombol saat cetak */
 @media print { .no-print, .header, .card:first-child, button { display: none !important; } .card { box-shadow: none; border: none; } }
 </style>
 </head>
@@ -70,7 +69,7 @@ th { background: #f8f9fa; }
 </div>
 
 <div class="card">
-  <h3 id="tabelJudul">📄 Daftar Usulan Kelurahan</h3>
+  <h3 id="tabelJudul">📄 Memuat Data Usulan...</h3>
   
   <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 15px;">
     <button class="success" onclick="exportExcel()">📤 Export Excel</button>
@@ -95,32 +94,62 @@ th { background: #f8f9fa; }
 </div>
 
 <script>
-/* ================= KONFIGURASI ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbzGB9apZUTZ01zLylAWI8ZH_hMqZTGgZFJoKp1nDgc0c5yUvpSkn3cxJHeaNpzqBFow/exec";
-
-/* ================= CEK LOGIN & SETUP JUDUL ================= */
-const role = localStorage.getItem("role");
 const kelurahanLogin = localStorage.getItem("kelurahan") || "Umum";
 
-if (role !== "operator") {
-  location.href = "index.html";
-}
-
-// Mengatur judul halaman dan judul tabel secara dinamis
+// Setup Judul
 judulHeader.innerText = "Musrenbang - " + kelurahanLogin;
 kelurahan.value = kelurahanLogin;
 document.getElementById("tabelJudul").innerText = "📄 Daftar Usulan " + kelurahanLogin;
 
-/* ================= DATA LOCAL ================= */
-let dataUsulan = JSON.parse(localStorage.getItem("dataUsulan")) || [];
-tampilkan();
+let dataUsulan = [];
+
+/* ================= AMBIL DATA DARI CLOUD (SETIAP REFRESH/LOGIN) ================= */
+async function muatDataDariCloud() {
+  const tbody = document.getElementById("tabelUsulan");
+  tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Menyinkronkan data dengan Cloud...</td></tr>";
+  
+  try {
+    const resp = await fetch(API_URL);
+    const allData = await resp.json();
+    
+    // Filter hanya data milik kelurahan ini
+    dataUsulan = allData.filter(d => d.kelurahan === kelurahanLogin);
+    tampilkan();
+  } catch (e) {
+    console.error(e);
+    // Jika cloud gagal, coba ambil dari local storage sebagai cadangan
+    dataUsulan = JSON.parse(localStorage.getItem("dataUsulan")) || [];
+    tampilkan();
+    alert("Gagal sinkron dengan Cloud. Menampilkan data lokal terakhir.");
+  }
+}
+
+/* ================= TAMPILKAN TABEL ================= */
+function tampilkan() {
+  const tbody = document.getElementById("tabelUsulan");
+  tbody.innerHTML = "";
+  let no = 1;
+
+  dataUsulan.forEach((d, i) => {
+    tbody.innerHTML += `
+    <tr>
+      <td>${no++}</td>
+      <td>${d.bidang}</td>
+      <td>${d.kegiatan}</td>
+      <td>${d.lokasi}</td>
+      <td>${Number(d.anggaran).toLocaleString("id-ID")}</td>
+      <td class="no-print">
+        <button class="edit" onclick="editUsulan(${i})">Edit</button>
+        <button class="hapus" onclick="hapusUsulan(${i})">Hapus</button>
+      </td>
+    </tr>`;
+  });
+}
 
 /* ================= SIMPAN DATA ================= */
-function simpanUsulan() {
-  if (!bidang.value || !kegiatan.value) {
-    alert("Bidang dan Nama Kegiatan wajib diisi!");
-    return;
-  }
+async function simpanUsulan() {
+  if (!bidang.value || !kegiatan.value) return alert("Bidang dan Nama Kegiatan wajib diisi!");
 
   const data = {
     kelurahan: kelurahanLogin,
@@ -132,91 +161,59 @@ function simpanUsulan() {
     keterangan: keterangan.value
   };
 
-  const idx = document.getElementById("editIndex").value;
+  const btn = document.getElementById("btnSimpan");
+  btn.disabled = true;
+  btn.innerText = "⌛ Mengirim...";
 
-  if (idx === "") {
-    // Tambah data baru
-    dataUsulan.push(data);
-    kirimKeSheet(data);
-    alert("Usulan berhasil disimpan dan dikirim ke Cloud!");
-  } else {
-    // Update data lama (lokal)
-    dataUsulan[idx] = data;
-    document.getElementById("editIndex").value = "";
-    document.getElementById("btnSimpan").innerText = "💾 Simpan & Kirim ke Cloud";
-    alert("Usulan lokal berhasil diperbarui!");
+  try {
+    // Kirim ke Google Sheets
+    await fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    });
+
+    alert("Data berhasil tersimpan permanen di Cloud!");
+    
+    // Simpan juga ke Lokal sebagai cadangan
+    const localData = JSON.parse(localStorage.getItem("dataUsulan")) || [];
+    localData.push(data);
+    localStorage.setItem("dataUsulan", JSON.stringify(localData));
+
+    resetForm();
+    muatDataDariCloud(); // Refresh data langsung dari cloud
+  } catch (e) {
+    alert("Gagal mengirim ke Cloud!");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "💾 Simpan & Kirim ke Cloud";
   }
-
-  localStorage.setItem("dataUsulan", JSON.stringify(dataUsulan));
-  resetForm();
-  tampilkan();
 }
 
-/* ================= TAMPILKAN TABEL ================= */
-function tampilkan() {
-  const tbody = document.getElementById("tabelUsulan");
-  tbody.innerHTML = "";
-  let no = 1;
-
-  dataUsulan.forEach((d, i) => {
-    if (d.kelurahan === kelurahanLogin) {
-      tbody.innerHTML += `
-      <tr>
-        <td>${no++}</td>
-        <td>${d.bidang}</td>
-        <td>${d.kegiatan}</td>
-        <td>${d.lokasi}</td>
-        <td>${Number(d.anggaran).toLocaleString("id-ID")}</td>
-        <td class="no-print">
-          <button class="edit" onclick="editUsulan(${i})">Edit</button>
-          <button class="hapus" onclick="hapusUsulan(${i})">Hapus</button>
-        </td>
-      </tr>`;
-    }
-  });
-}
-
-/* ================= FITUR EDIT & HAPUS ================= */
 function editUsulan(i) {
   const d = dataUsulan[i];
-  document.getElementById("bidang").value = d.bidang;
-  document.getElementById("kegiatan").value = d.kegiatan;
-  document.getElementById("lokasi").value = d.lokasi;
-  document.getElementById("volume").value = d.volume;
-  document.getElementById("anggaran").value = d.anggaran;
-  document.getElementById("keterangan").value = d.keterangan;
-  document.getElementById("editIndex").value = i;
-  document.getElementById("btnSimpan").innerText = "🆙 Perbarui Usulan Lokal";
+  bidang.value = d.bidang;
+  kegiatan.value = d.kegiatan;
+  lokasi.value = d.lokasi;
+  volume.value = d.volume;
+  anggaran.value = d.anggaran;
+  keterangan.value = d.keterangan;
   window.scrollTo(0, 0);
+  alert("Silakan perbaiki data. Catatan: Data lama di Cloud tetap ada, data baru akan tersimpan sebagai usulan baru.");
 }
 
 function hapusUsulan(i) {
-  if (confirm("Hapus usulan ini dari daftar lokal?")) {
+  if (confirm("Hapus usulan dari tampilan lokal? (Catatan: Data di Google Sheets Admin tetap tersimpan)")) {
     dataUsulan.splice(i, 1);
-    localStorage.setItem("dataUsulan", JSON.stringify(dataUsulan));
     tampilkan();
   }
 }
 
-/* ================= KIRIM CLOUD ================= */
-function kirimKeSheet(data) {
-  fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify(data)
-  });
-}
-
-/* ================= EXPORT & NAVIGASI ================= */
 function exportExcel() {
   let table = document.querySelector("table").cloneNode(true);
-  // Hapus kolom aksi sebelum export
   let rows = table.rows;
   for (let i = 0; i < rows.length; i++) { rows[i].deleteCell(-1); }
-  
-  let html = `<html><head><meta charset="UTF-8"></head><body>
-              <h2>Daftar Usulan ${kelurahanLogin}</h2>${table.outerHTML}
-              </body></html>`;
+  let html = `<html><head><meta charset="UTF-8"></head><body><h2>Daftar Usulan ${kelurahanLogin}</h2>${table.outerHTML}</body></html>`;
   let blob = new Blob([html], { type: "application/vnd.ms-excel" });
   let a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -225,16 +222,14 @@ function exportExcel() {
 }
 
 function resetForm() {
-  document.getElementById("editIndex").value = "";
-  document.getElementById("bidang").value = "";
-  document.getElementById("kegiatan").value = "";
-  document.getElementById("lokasi").value = "";
-  document.getElementById("volume").value = "";
-  document.getElementById("anggaran").value = "";
-  document.getElementById("keterangan").value = "";
+  bidang.value = ""; kegiatan.value = ""; lokasi.value = "";
+  volume.value = ""; anggaran.value = ""; keterangan.value = "";
 }
 
 function kembali() { location.href = "dashboard.html"; }
+
+// JALANKAN SYNC SAAT HALAMAN DIBUKA
+muatDataDariCloud();
 </script>
 
 </body>
