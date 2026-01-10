@@ -3,56 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Input Usulan - Musrenbang Makale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* ... (CSS Anda tetap sama) ... */
-        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; margin: 0; }
+        /* ===== CSS UNTUK TAMPILAN LAYAR ===== */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; padding: 20px; margin: 0; color: #333; }
         .card { background: white; padding: 25px; border-radius: 8px; max-width: 1100px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; margin-right: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; table-layout: fixed; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; word-wrap: break-word; }
-        th { background: #f8f9fa; }
-        .no-print { margin-bottom: 15px; }
+        h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 80px; resize: vertical; }
+        button { background: #27ae60; color: white; border: none; padding: 12px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; transition: 0.3s; }
+        button:hover { opacity: 0.9; }
+        .btn-back { background: #666; margin-bottom: 15px; }
+        .btn-print { background: #3498db; margin-bottom: 15px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; word-wrap: break-word; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        
+        .no-print { display: block; }
         .print-header { display: none; text-align: center; }
 
+        /* ===== CSS KHUSUS UNTUK CETAK PDF ===== */
         @media print {
-            .no-print, #fUsulan, hr, h3 { display: none !important; }
+            @page { size: landscape; margin: 1cm; }
             body { background: white; padding: 0; }
-            .card { box-shadow: none; border: none; width: 100%; max-width: none; }
-            .print-header { display: block !important; margin-bottom: 20px; }
-            table { font-size: 10px; width: 100%; }
-            th { background-color: #eee !important; color: black !important; }
+            .no-print, #fUsulan, .btn-back, .btn-print, h3.title-input { display: none !important; }
+            .card { box-shadow: none; border: none; width: 100%; max-width: none; margin: 0; padding: 0; }
+            
+            .print-header { 
+                display: block !important; 
+                margin-bottom: 20px; 
+            }
+            .print-header h2 { margin: 5px 0; font-size: 18pt; }
+            .print-header h3 { 
+                margin: 5px 0; 
+                border: none; 
+                text-transform: uppercase; 
+                font-size: 14pt; 
+                color: #000 !important;
+            }
+            
+            table { font-size: 10pt; width: 100%; border: 1px solid #000; }
+            th, td { border: 1px solid #000 !important; padding: 8px; }
+            th { background-color: #eee !important; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
+
     <div class="card">
         <div class="no-print">
-            <button onclick="location.href='dashboard.html'" style="background:#666">⬅ Kembali</button>
-            <button onclick="window.print()" style="background:#3498db">🖨️ Cetak PDF Usulan</button>
+            <button class="btn-back" onclick="location.href='dashboard.html'">⬅ Kembali ke Dashboard</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak PDF Laporan</button>
         </div>
 
         <div class="print-header">
-            <img src="Logo_Tana_Toraja.png" width="60">
-            <h2 style="margin:5px">DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h2>
-            <h3 id="labelKelPrint" style="margin:5px; color: black !important;"></h3>
-            <hr style="border:1px solid black">
+            <img src="Logo_Tana_Toraja.png" width="70" alt="Logo">
+            <h2>DAFTAR USULAN MUSRENBANG KECAMATAN MAKALE</h2>
+            <h3 id="labelKelPrint"></h3>
+            <hr style="border: 1px solid black; margin-top: 10px;">
         </div>
 
-        <h3>Input Usulan: <span id="namaKel">Memuat...</span></h3>
+        <h3 class="title-input">Input Usulan: <span id="namaKel"></span></h3>
         
         <form id="fUsulan">
             <input type="hidden" id="rowId">
+            <label>Pilih Bidang:</label>
             <select id="bidang" required>
                 <option value="">-- Pilih Bidang --</option>
                 <option>Bidang Sarana dan Prasarana</option>
                 <option>Bidang Sosial Budaya</option>
                 <option>Bidang Ekonomi</option>
             </select>
-            <input type="text" id="kegiatan" placeholder="Nama Kegiatan" required>
-            <input type="text" id="lokasi" placeholder="Lokasi Spesifik" required>
-            <input type="text" id="volume" placeholder="Volume (Contoh: 100m / 2 Unit)" required>
-            <input type="number" id="anggaran" placeholder="Anggaran (Rp)" required>
+            
+            <input type="text" id="kegiatan" placeholder="Nama Kegiatan / Nama Program" required>
+            <input type="text" id="lokasi" placeholder="Lokasi Spesifik (RT/RW/Dusun)" required>
+            <input type="text" id="volume" placeholder="Volume (Contoh: 150 Meter / 2 Unit)" required>
+            <input type="number" id="anggaran" placeholder="Estimasi Anggaran (Rp)" required>
+            
+            <label>OPD Tujuan:</label>
             <select id="opd" required>
                 <option value="">-- Pilih OPD Tujuan --</option>
                 <option>Diskominfo dan Persandian</option><option>DPUTR</option><option>DPRKP</option>
@@ -66,84 +95,84 @@
                 <option>Satpolpp</option><option>Sekretariat Daerah</option><option>Sekretariat DPRD</option>
                 <option>RSUD Lakipadada</option>
             </select>
-            <textarea id="keterangan" placeholder="Keterangan tambahan (Muncul di laporan cetak)"></textarea>
+            
+            <textarea id="keterangan" placeholder="Keterangan tambahan (Alasan usulan / Manfaat)"></textarea>
+            
             <button type="submit" id="btnProses">KIRIM USULAN</button>
         </form>
 
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20%;">Kegiatan</th>
+                    <th style="width: 18%;">Kegiatan</th>
                     <th style="width: 15%;">Lokasi</th>
-                    <th style="width: 10%;">Vol</th>
+                    <th style="width: 10%;">Volume</th>
                     <th style="width: 15%;">Anggaran</th>
-                    <th style="width: 15%;">OPD</th>
+                    <th style="width: 15%;">OPD Tujuan</th>
                     <th style="width: 20%;">Keterangan</th>
-                    <th class="no-print" style="width: 5%;">Aksi</th>
+                    <th class="no-print" style="width: 7%;">Aksi</th>
                 </tr>
             </thead>
-            <tbody id="isiTabel"></tbody>
+            <tbody id="isiTabel">
+                <tr><td colspan="7" style="text-align:center">Memuat data...</td></tr>
+            </tbody>
         </table>
     </div>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbyQTPRqZaFrpsHGUrADSpnjAffkHLBDANxFzC2_Hwi4DOteviK9G77SOq5n6IU-u0CG/exec";
-        
-        // Fungsi untuk menginisialisasi nama wilayah
-        function initWilayah() {
-            const kel = localStorage.getItem("kelurahan");
-            if (!kel) {
-                alert("Sesi berakhir, silakan login kembali.");
-                location.href = "index.html";
-                return;
-            }
+        const kel = localStorage.getItem("kelurahan");
 
-            // Set ke layar
-            const elNamaKel = document.getElementById("namaKel");
-            if(elNamaKel) elNamaKel.innerText = kel;
-
-            // Set ke header cetak
-            const elLabelPrint = document.getElementById("labelKelPrint");
-            if(elLabelPrint) elLabelPrint.innerText = "Wilayah: " + kel;
-            
-            return kel;
+        // Validasi Login & Inisialisasi Nama Kelurahan
+        if(!kel) {
+            alert("Sesi berakhir, silakan login kembali.");
+            location.href="index.html";
+        } else {
+            document.getElementById("namaKel").innerText = kel;
+            document.getElementById("labelKelPrint").innerText = "WILAYAH: " + kel;
         }
 
-        const currentKel = initWilayah();
-
+        // Fungsi Memuat Data
         async function loadData() {
             try {
                 const r = await fetch(API + "?t=" + Date.now());
                 const data = await r.json();
-                const filtered = data.filter(x => x.kelurahan === currentKel);
+                const filtered = data.filter(x => x.kelurahan === kel);
+                
                 let h = "";
-                filtered.reverse().forEach(d => {
-                    h += `<tr>
-                        <td>${d.kegiatan}</td>
-                        <td>${d.lokasi}</td>
-                        <td>${d.volume}</td>
-                        <td>${Number(d.anggaran).toLocaleString('id-ID')}</td>
-                        <td>${d.opd}</td>
-                        <td>${d.keterangan || "-"}</td>
-                        <td class="no-print">
-                            <button onclick="hapus('${d.timestamp}')" style="background:red; padding:5px; border-radius:3px; border:none; color:white; cursor:pointer;">✖</button>
-                        </td>
-                    </tr>`;
-                });
-                document.getElementById("isiTabel").innerHTML = h || "<tr><td colspan='7' style='text-align:center'>Belum ada data usulan.</td></tr>";
-            } catch (err) {
-                console.error("Gagal memuat data:", err);
+                if(filtered.length === 0) {
+                    h = "<tr><td colspan='7' style='text-align:center'>Belum ada usulan dari wilayah ini.</td></tr>";
+                } else {
+                    filtered.reverse().forEach(d => {
+                        h += `<tr>
+                            <td>${d.kegiatan}</td>
+                            <td>${d.lokasi}</td>
+                            <td>${d.volume}</td>
+                            <td>Rp ${Number(d.anggaran).toLocaleString('id-ID')}</td>
+                            <td>${d.opd}</td>
+                            <td>${d.keterangan || "-"}</td>
+                            <td class="no-print">
+                                <button onclick="hapus('${d.timestamp}')" style="background:#e74c3c; padding:5px 10px; font-size:10px;">Hapus</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                document.getElementById("isiTabel").innerHTML = h;
+            } catch (e) {
+                document.getElementById("isiTabel").innerHTML = "<tr><td colspan='7' style='text-align:center; color:red;'>Gagal mengambil data. Periksa koneksi internet.</td></tr>";
             }
         }
 
+        // Simpan Data Baru
         document.getElementById("fUsulan").onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById("btnProses");
-            btn.disabled = true; btn.innerText = "Mengirim...";
-            
+            btn.disabled = true; 
+            btn.innerText = "Mengirim...";
+
             const payload = {
                 action: "insert",
-                kelurahan: currentKel, 
+                kelurahan: kel, 
                 bidang: document.getElementById("bidang").value,
                 kegiatan: document.getElementById("kegiatan").value, 
                 lokasi: document.getElementById("lokasi").value,
@@ -155,24 +184,26 @@
 
             try {
                 await fetch(API, { method: "POST", body: JSON.stringify(payload) });
-                alert("Berhasil!");
+                alert("Usulan berhasil dikirim!");
                 document.getElementById("fUsulan").reset();
                 loadData();
             } catch (err) {
-                alert("Gagal mengirim data.");
+                alert("Terjadi kesalahan saat mengirim data.");
             } finally {
-                btn.disabled = false; btn.innerText = "KIRIM USULAN";
+                btn.disabled = false; 
+                btn.innerText = "KIRIM USULAN";
             }
         };
 
+        // Hapus Data
         async function hapus(ts) {
-            if(confirm("Hapus usulan ini?")) {
+            if(confirm("Apakah Anda yakin ingin menghapus usulan ini?")) {
                 await fetch(API, { method: "POST", body: JSON.stringify({action:"delete", rowId: ts}) });
                 loadData();
             }
         }
 
-        // Jalankan saat halaman dibuka
+        // Jalankan saat pertama kali dibuka
         loadData();
     </script>
 </body>
