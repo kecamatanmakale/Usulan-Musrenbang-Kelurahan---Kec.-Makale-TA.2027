@@ -8,19 +8,20 @@
         .header { display: flex; align-items: center; background: #2c7be5; color: white; padding: 12px 20px; }
         .logo { width: 45px; margin-right: 15px; }
         .container { padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         .no-print { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
         th { background: #f8f9fa; }
-        button { padding: 10px; border: none; border-radius: 4px; color: white; cursor: pointer; background: #2c7be5; }
+        select, button { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #2c7be5; color: white; cursor: pointer; border: none; }
         @media print { .no-print, .header { display: none !important; } }
     </style>
 </head>
 <body>
     <div class="header">
         <img src="Logo_Tana_Toraja.png" class="logo">
-        <strong>Rekapitulasi Usulan Kecamatan (Cloud)</strong>
+        <strong>Rekapitulasi Usulan Kecamatan (Data Cloud)</strong>
     </div>
 
     <div class="container">
@@ -33,9 +34,9 @@
                     <option>Bidang Sosial Budaya</option>
                     <option>Bidang Ekonomi</option>
                 </select>
-                <button style="background:#28a745" onclick="exportExcel()">Excel</button>
-                <button style="background:#dc3545" onclick="window.print()">Print PDF</button>
-                <button style="background:#6c757d" onclick="location.href='dashboard_admin.html'">Kembali</button>
+                <button style="background:#28a745" onclick="exportExcel()">📥 Export Excel</button>
+                <button style="background:#dc3545" onclick="window.print()">🖨️ Print PDF</button>
+                <button style="background:#6c757d" onclick="location.href='dashboard_admin.html'">⬅ Kembali</button>
             </div>
 
             <table id="tabelRekap">
@@ -52,13 +53,15 @@
         let dataCloud = [];
 
         async function muatData() {
+            const tbody = document.getElementById("tbody");
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center'>Memuat data dari Google Sheets...</td></tr>";
             try {
                 const resp = await fetch(API_URL);
                 dataCloud = await resp.json();
-                const kelSet = [...new Set(dataCloud.map(d => d.kelurahan))];
-                kelSet.forEach(k => { document.getElementById("filterKel").innerHTML += `<option>${k}</option>`; });
+                const listKel = [...new Set(dataCloud.map(d => d.kelurahan))];
+                listKel.forEach(k => { document.getElementById("filterKel").innerHTML += `<option>${k}</option>`; });
                 tampilkan();
-            } catch (e) { alert("Gagal ambil data cloud"); }
+            } catch (e) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal memuat data cloud.</td></tr>"; }
         }
 
         function tampilkan() {
@@ -66,8 +69,9 @@
             const fBid = document.getElementById("filterBidang").value;
             const tbody = document.getElementById("tbody");
             tbody.innerHTML = "";
-            dataCloud.filter(d => (!fKel || d.kelurahan === fKel) && (!fBid || d.bidang === fBid)).forEach((d, i) => {
-                tbody.innerHTML += `<tr><td>${i+1}</td><td>${d.kelurahan}</td><td>${d.bidang}</td><td>${d.kegiatan}</td><td>${d.lokasi}</td><td>${Number(d.anggaran).toLocaleString('id-ID')}</td></tr>`;
+            let no = 1;
+            dataCloud.filter(d => (!fKel || d.kelurahan === fKel) && (!fBid || d.bidang === fBid)).forEach(d => {
+                tbody.innerHTML += `<tr><td>${no++}</td><td>${d.kelurahan}</td><td>${d.bidang}</td><td>${d.kegiatan}</td><td>${d.lokasi}</td><td>${Number(d.anggaran).toLocaleString('id-ID')}</td></tr>`;
             });
         }
 
@@ -76,7 +80,7 @@
             let blob = new Blob([html], {type: "application/vnd.ms-excel"});
             let a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = "Rekap_Musrenbang.xls";
+            a.download = "Rekap_Musrenbang_Kecamatan.xls";
             a.click();
         }
         muatData();
