@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Login Aplikasi Musrenbang</title>
+
+<style>
+body { font-family: Arial; background: #2c7be5; }
+.login-box {
+  width: 360px;
+  margin: 100px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+}
+.logo {
+  width: 120px;
+  display: block;
+  margin: 0 auto 15px;
+}
+h2 { text-align: center; }
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+button {
+  background: #2c7be5;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+  <img src="Logo_Tana_Toraja.png" class="logo">
+
+  <h2>Login Aplikasi Musrenbang</h2>
+
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <div id="error" class="error"></div>
+
+</div>
+
+<script>
+function login(){
+  const u = document.getElementById("username").value.trim().toLowerCase();
+  const p = document.getElementById("password").value.trim();
+  const error = document.getElementById("error");
+  error.innerText = "";
+
+  /* ===== ADMIN ===== */
+  if(u === "admin" && p === "admin123"){
+    localStorage.setItem("role","admin");
+    localStorage.setItem("kelurahan","ADMIN KECAMATAN");
+    window.location.href = "dashboard_admin.html";
+    return;
+  }
+
+  /* ===== OPERATOR KELURAHAN ===== */
+  const operators = {
+    ariang: { pass:"ariang2027", kel:"Kelurahan Ariang" },
+    batupapan: { pass:"batupapan2027", kel:"Kelurahan Batupapan" },
+    bombongan: { pass:"bombongan2027", kel:"Kelurahan Bombongan" },
+    botang: { pass:"botang2027", kel:"Kelurahan Botang" },
+    buntuburake: { pass:"burake2027", kel:"Kelurahan Buntu Burake" },
+    kamali: { pass:"kamali2027", kel:"Kelurahan Kamali Pentalluan" },
+    lamunan: { pass:"lamunan2027", kel:"Kelurahan Lamunan" },
+    lapandan: { pass:"lapandan2027", kel:"Kelurahan Lapandan" },
+    lea: { pass:"lea2027", kel:"Lembang Lea" },
+    manggau: { pass:"manggau2027", kel:"Kelurahan Manggau" },
+    pantan: { pass:"pantan2027", kel:"Kelurahan Pantan" },
+    rante: { pass:"rante2027", kel:"Kelurahan Rante" },
+    tampo: { pass:"tampo2027", kel:"Kelurahan Tampo" },
+    tarongko: { pass:"tarongko2027", kel:"Kelurahan Tarongko" },
+    tondon: { pass:"tondon2027", kel:"Kelurahan Tondon Mamullu" }
+  };
+
+  if(operators[u] && p === operators[u].pass){
+    localStorage.setItem("role","operator");
+    localStorage.setItem("kelurahan", operators[u].kel);
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  error.innerText = "Username atau Password salah!";
+}
+</script>
+
+</body>
+</html>
+

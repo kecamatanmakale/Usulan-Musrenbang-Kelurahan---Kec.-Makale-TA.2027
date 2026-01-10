@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Admin Kecamatan</title>
+
+<style>
+body { margin:0; font-family:Arial; background:#f4f6f9; }
+.header {
+  display:flex; align-items:center;
+  background:#2c7be5; color:#fff;
+  padding:12px 20px;
+}
+.logo { width:45px; margin-right:15px; }
+.container { padding:20px; }
+.card {
+  background:#fff; padding:20px;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+button {
+  width:100%; padding:12px;
+  margin-top:10px;
+  background:#2c7be5;
+  color:#fff; border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+.logout { background:#dc3545; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="Logo_Tana_Toraja.png" class="logo">
+  <div>
+    <h3 style="margin:0">Dashboard Admin Kecamatan</h3>
+    <small>Kecamatan Makale</small>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h4>👋 Selamat Datang</h4>
+    <p>Anda login sebagai <strong>Admin Kecamatan</strong></p>
+  </div>
+
+  <div class="card">
+    <h4>📌 Menu Utama</h4>
+<button onclick="location.href='grafik.html'" style="background:#6c757d; margin-top:10px;">
+  📊 Lihat Grafik Anggaran (Real-time)
+</button>
+    <button onclick="location.href='data_admin.html'">
+      📄 Kelola Data Usulan Semua Kelurahan
+    </button>
+
+    <button onclick="location.href='rekap_admin.html'">
+      📊 Rekapitulasi & Export
+    </button>
+  </div>
+
+  <div class="card">
+    <button class="logout" onclick="logout()">🚪 Logout</button>
+  </div>
+
+</div>
+
+<script>
+if(localStorage.getItem("role")!=="admin"){
+  location.href="index.html";
+}
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+</script>
+
+</body>
+</html>

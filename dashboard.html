@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Operator</title>
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f9}
+.header{background:#1f8a50;color:#fff;padding:12px;display:flex;align-items:center}
+.logo{width:45px;margin-right:10px}
+.card{background:#fff;margin:20px;padding:20px;border-radius:8px}
+button{width:100%;padding:12px;margin-top:10px;background:#1f8a50;color:#fff;border:none}
+.logout{background:#c0392b}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="Logo_Tana_Toraja.png" class="logo">
+  <strong id="kel"></strong>
+</div>
+
+<div class="card">
+  <h3>Menu Operator</h3>
+  <button onclick="goInput()">➕ Input / Kelola Usulan</button>
+  <button onclick="goExcel()">📤 Export Excel</button>
+  <button onclick="window.print()">🖨️ Print PDF</button>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+if(localStorage.getItem("role")!=="operator")location.href="index.html";
+kel.innerText=localStorage.getItem("kelurahan");
+
+function goInput(){location.href="input.html"}
+function goExcel(){location.href="input.html#excel"}
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+</script>
+
+</body>
+</html>

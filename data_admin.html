@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Data Usulan - Admin</title>
+
+<style>
+body{font-family:Arial;background:#f4f6f9;margin:0}
+.header{background:#2c7be5;color:#fff;padding:12px 20px}
+.container{padding:20px}
+.card{background:#fff;padding:20px;border-radius:8px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ccc;padding:8px}
+button{padding:6px 10px;background:#dc3545;color:#fff;border:none;cursor:pointer}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h3>📄 Data Usulan Semua Kelurahan</h3>
+</div>
+
+<div class="container">
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Kelurahan</th>
+          <th>Bidang</th>
+          <th>Kegiatan</th>
+          <th>Lokasi</th>
+          <th>Anggaran</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tabel"></tbody>
+    </table>
+
+    <br>
+    <button onclick="kembali()">⬅ Kembali</button>
+  </div>
+</div>
+
+<script>
+if(localStorage.getItem("role")!=="admin") location.href="index.html";
+
+let data = JSON.parse(localStorage.getItem("dataUsulan"))||[];
+let tabel=document.getElementById("tabel");
+
+function tampil(){
+  tabel.innerHTML="";
+  data.forEach((d,i)=>{
+    tabel.innerHTML+=`
+    <tr>
+      <td>${i+1}</td>
+      <td>${d.kelurahan}</td>
+      <td>${d.bidang}</td>
+      <td>${d.kegiatan}</td>
+      <td>${d.lokasi}</td>
+      <td>${Number(d.anggaran).toLocaleString("id-ID")}</td>
+      <td><button onclick="hapus(${i})">Hapus</button></td>
+    </tr>`;
+  });
+}
+function hapus(i){
+  if(confirm("Hapus data ini?")){
+    data.splice(i,1);
+    localStorage.setItem("dataUsulan",JSON.stringify(data));
+    tampil();
+  }
+}
+function kembali(){
+  location.href="dashboard_admin.html";
+}
+tampil();
+</script>
+
+</body>
+</html>

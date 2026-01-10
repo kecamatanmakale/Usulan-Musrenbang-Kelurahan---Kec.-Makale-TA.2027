@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Grafik Rekap Musrenbang</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f4f8;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  background: #2c7be5;
+  color: white;
+  padding: 12px 20px;
+}
+
+.logo {
+  width: 40px;
+  margin-right: 12px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.bar-container {
+  margin-top: 20px;
+}
+
+.bar-item {
+  margin-bottom: 15px;
+}
+
+.bar-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.bar {
+  height: 30px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #2c7be5;
+  color: white;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #6c757d;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="Logo_Tana_Toraja.png" class="logo">
+  <strong>Grafik Rekap Anggaran Usulan Musrenbang</strong>
+</div>
+
+<div class="container">
+  <div class="card">
+    <h3>📊 Grafik Total Anggaran per Bidang</h3>
+
+    <div id="grafik" class="bar-container"></div>
+
+    <button onclick="kembali()">⬅ Kembali ke Dashboard</button>
+  </div>
+</div>
+
+<script>
+/* ================= KONFIGURASI ================= */
+const API_URL = "TEMPEL_URL_WEB_APP_ANDA_DI_SINI"; // Ganti dengan URL Google Apps Script Anda
+
+let dataUsulan = [];
+
+// Definisi warna berdasarkan bidang
+const warnaBidang = {
+  "Sarana dan Prasarana": "#2c7be5", // Biru
+  "Sosial Budaya": "#e63946",       // Merah
+  "Ekonomi": "#2a9d8f",             // Hijau Toska
+  "Default": "#6c757d"              // Abu-abu jika tidak cocok
+};
+
+/* ================= AMBIL DATA DARI CLOUD ================= */
+async function muatGrafikCloud() {
+  const grafikContainer = document.getElementById("grafik");
+  grafikContainer.innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      <p>Sedang mengambil data dari Google Sheets...</p>
+    </div>`;
+
+  try {
+    const response = await fetch(API_URL);
+    dataUsulan = await response.json();
+    prosesDanTampilkanGrafik();
+  } catch (err) {
+    console.error("Gagal memuat grafik:", err);
+    // Fallback ke data lokal jika koneksi gagal
+    dataUsulan = JSON.parse(localStorage.getItem("dataUsulan")) || [];
+    prosesDanTampilkanGrafik();
+  }
+}
+
+function prosesDanTampilkanGrafik() {
+  const rekap = {};
+  let maxAnggaran = 0;
+
+  // Hitung total per bidang
+  dataUsulan.forEach(d => {
+    const b = d.bidang || "Lainnya";
+    const nilai = Number(d.anggaran || 0);
+    if (!rekap[b]) rekap[b] = 0;
+    rekap[b] += nilai;
+    if (rekap[b] > maxAnggaran) maxAnggaran = rekap[b];
+  });
+
+  const grafik = document.getElementById("grafik");
+  grafik.innerHTML = ""; 
+
+  if (Object.keys(rekap).length === 0) {
+    grafik.innerHTML = "<p style='text-align:center'>Belum ada data usulan masuk.</p>";
+    return;
+  }
+
+  // Buat Bar untuk setiap bidang
+  for (let b in rekap) {
+    const persen = (rekap[b] / maxAnggaran) * 100;
+    const warna = warnaBidang[b] || warnaBidang["Default"];
+    
+    grafik.innerHTML += `
+      <div class="bar-item" style="margin-bottom: 20px;">
+        <div class="bar-label" style="display:flex; justify-content:space-between;">
+          <span>${b}</span>
+          <strong>Rp ${rekap[b].toLocaleString("id-ID")}</strong>
+        </div>
+        <div class="bar" style="height:35px; background:#e9ecef; border-radius:18px; overflow:hidden; margin-top:5px;">
+          <div class="bar-fill" style="
+            width:${persen}%; 
+            height:100%; 
+            background:${warna}; 
+            color:white; 
+            display:flex; 
+            align-items:center; 
+            padding-left:15px;
+            font-size:12px;
+            transition: width 1s ease-in-out;">
+            ${persen > 10 ? Math.round(persen) + '%' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Inisialisasi saat halaman dimuat
+muatGrafikCloud();
+
+function kembali() {
+  window.location.href = "dashboard_admin.html";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rekap Musrenbang</title>
+<style>
+body{font-family:Arial}
+table{width:100%;border-collapse:collapse}
+td,th{border:1px solid #ccc;padding:6px}
+button{margin:10px;padding:10px}
+@media print{button{display:none}}
+</style>
+</head>
+
+<body>
+
+<h3>Rekap Usulan Musrenbang Kecamatan Makale</h3>
+
+<button onclick="exportExcel()">Export Excel</button>
+<button onclick="window.print()">Print PDF</button>
+
+<table>
+<thead>
+<tr>
+<th>Kelurahan</th><th>Bidang</th><th>Kegiatan</th><th>Anggaran</th>
+</tr>
+</thead>
+<tbody id="tb"></tbody>
+</table>
+
+<script>
+if(localStorage.getItem("role")!=="admin")location.href="index.html";
+
+let data=JSON.parse(localStorage.getItem("dataUsulan"))||[];
+data.forEach(d=>{
+  tb.innerHTML+=`
+  <tr>
+  <td>${d.kelurahan}</td>
+  <td>${d.bidang}</td>
+  <td>${d.kegiatan}</td>
+  <td>${d.anggaran}</td>
+  </tr>`;
+});
+
+function exportExcel(){
+  let csv="Kelurahan,Bidang,Kegiatan,Anggaran\n";
+  data.forEach(d=>{
+    csv+=`${d.kelurahan},${d.bidang},${d.kegiatan},${d.anggaran}\n`;
+  });
+  let a=document.createElement("a");
+  a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
+  a.download="Rekap_Musrenbang_Kecamatan.xls";
+  a.click();
+}
+</script>
+
+</body>
+</html>
