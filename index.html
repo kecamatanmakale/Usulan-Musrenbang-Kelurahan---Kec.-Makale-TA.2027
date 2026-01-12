@@ -1,45 +1,84 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Musrenbang Makale</title>
+    <meta charset="UTF-8">
+    <title>Login Musrenbang Makale 2027</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #2c7be5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        select, input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background: #2c7be5; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .logo { width: 80px; margin-bottom: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1f8a50 0%, #145a32 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 40px; border-radius: 15px; width: 340px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .logo { width: 80px; margin-bottom: 15px; }
+        h2 { margin: 0; color: #333; font-size: 22px; }
+        .sub-title { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.4; }
+        select, input, button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
+        button { background: #1f8a50; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 25px; transition: 0.3s; }
+        button:hover { background: #145a32; transform: translateY(-2px); }
+        
+        /* Pesan Khusus Sesuai Permintaan */
+        .note { margin-top: 25px; font-size: 12px; color: #145a32; font-weight: bold; line-height: 1.5; padding: 10px; background: #f0faf4; border-radius: 8px; border-left: 4px solid #1f8a50; text-align: center; }
+        .footer { margin-top: 20px; font-size: 11px; color: #888; border-top: 1px solid #eee; padding-top: 15px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="box">
-        <img src="Logo_Tana_Toraja.png" class="logo">
-        <h2>Musrenbang Makale</h2>
+        <img src="logo.png" class="logo" alt="Logo Tana Toraja">
+        
+        <h2>LOGIN SISTEM</h2>
+        <div class="sub-title">Musrenbang Kecamatan Makale<br>Tahun Anggaran 2027</div>
+        
         <select id="user">
             <option value="">-- Pilih Wilayah --</option>
             <option value="admin">ADMIN KECAMATAN</option>
-            <option>Kelurahan Ariang</option><option>Kelurahan Batupapan</option><option>Kelurahan Bombongan</option>
-            <option>Kelurahan Botang</option><option>Kelurahan Buntu Burake</option><option>Kelurahan Kamali Pentalluan</option>
-            <option>Kelurahan Lamunan</option><option>Kelurahan Lapandan</option><option>Lembang Lea</option>
-            <option>Kelurahan Manggau</option><option>Kelurahan Pantan</option><option>Kelurahan Rante</option>
-            <option>Kelurahan Tampo Makale</option><option>Kelurahan Tarongko</option><option>Kelurahan Tondon Mamullu</option>
+            <option value="ariang">Kelurahan Ariang</option>
+            <option value="batupapan">Kelurahan Batupapan</option>
+            <option value="bombongan">Kelurahan Bombongan</option>
+            <option value="botang">Kelurahan Botang</option>
+            <option value="burake">Kelurahan Buntu Burake</option>
+            <option value="kamali">Kelurahan Kamali Pentalluan</option>
+            <option value="lamunan">Kelurahan Lamunan</option>
+            <option value="lapandan">Kelurahan Lapandan</option>
+            <option value="lea">Lembang Lea</option>
+            <option value="manggau">Kelurahan Manggau</option>
+            <option value="pantan">Kelurahan Pantan</option>
+            <option value="rante">Kelurahan Rante</option>
+            <option value="tampo">Kelurahan Tampo Makale</option>
+            <option value="tarongko">Kelurahan Tarongko</option>
+            <option value="tondon">Kelurahan Tondon Mamullu</option>
         </select>
+        
         <input type="password" id="pass" placeholder="Password">
+        
         <button onclick="login()">MASUK</button>
+
+        <div class="note">
+            Aplikasi ini khusus untuk input usulan Hasil Musrenbang Kelurahan Tahun Anggaran 2027 di Kecamatan Makale
+        </div>
+
+        <div class="footer">
+            Created by : Fuad Amry - 2026
+        </div>
     </div>
+
     <script>
         function login() {
             const u = document.getElementById("user").value;
             const p = document.getElementById("pass").value;
+            const selectElement = document.getElementById("user");
+            const text = selectElement.options[selectElement.selectedIndex].text;
+            
+            if (!u) { alert("Silakan pilih wilayah terlebih dahulu!"); return; }
+
             if(u === "admin" && p === "admin123") {
                 localStorage.setItem("role", "admin");
                 localStorage.setItem("kelurahan", "ADMIN KECAMATAN");
-                location.href = "dashboard_admin.html";
-            } else if(u && p === "makale2027") {
+                window.location.href = "dashboard_admin.html";
+            } else if(u && p === u + "2027") {
                 localStorage.setItem("role", "operator");
-                localStorage.setItem("kelurahan", u);
-                location.href = "dashboard.html";
-            } else { alert("Login Gagal!"); }
+                localStorage.setItem("kelurahan", text);
+                window.location.href = "dashboard.html";
+            } else { 
+                alert("Login Gagal! Pastikan pilihan wilayah dan password benar."); 
+            }
         }
     </script>
 </body>
